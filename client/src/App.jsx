@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import DashboardLayout from './components/layout/DashboardLayout';
 import DashboardPage from './pages/DashboardPage';
@@ -10,9 +10,20 @@ import { useAuthStore } from './store/useAuthStore';
 import EditorLayout from './components/editor/EditorLayout';
 import CreateResumeProxy from './pages/resumes/CreateResumeProxy';
 import EditorEntryPoint from './pages/resumes/EditorEntryPoint';
+import { useThemeStore } from './store/useThemeStore';
+import AnimatedBackground from './components/layout/AnimatedBackground';
 
 function App() {
   const initialize = useAuthStore((state) => state.initialize);
+  const theme = useThemeStore((state) => state.theme);
+
+  useLayoutEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   useEffect(() => {
     initialize();
@@ -72,6 +83,7 @@ function App() {
 
   return (
     <>
+      <AnimatedBackground />
       <RouterProvider router={router} />
       <Toaster
         position="top-right"
