@@ -1,8 +1,9 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 
-export default function ProtectedRoute() {
+export default function ProtectedRoute({ children }) {
     const { user, loading } = useAuthStore();
+    const location = useLocation();
 
     if (loading) {
         return (
@@ -16,8 +17,8 @@ export default function ProtectedRoute() {
     }
 
     if (!user) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    return <Outlet />;
+    return children ? children : <Outlet />;
 }

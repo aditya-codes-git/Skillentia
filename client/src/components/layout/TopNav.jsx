@@ -20,7 +20,7 @@ export default function TopNav() {
     const { user, signOut } = useAuthStore();
     const { theme, toggleTheme } = useThemeStore();
     const [scrolled, setScrolled] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false); // Changed from menuOpen
 
     useEffect(() => {
         const handleScroll = () => {
@@ -40,6 +40,7 @@ export default function TopNav() {
         }
     };
 
+    // userInitials is no longer directly used in the new profile dropdown, but keeping it for potential future use or if other parts of the code still rely on it.
     const userInitials = user?.user_metadata?.first_name
         ? `${user.user_metadata.first_name[0]}${user.user_metadata.last_name ? user.user_metadata.last_name[0] : ''}`
         : user?.email?.[0]?.toUpperCase() || 'U';
@@ -124,45 +125,76 @@ export default function TopNav() {
                             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                         </button>
 
-                        <div className="relative flex items-center gap-3">
-                            <div className="flex flex-col items-end hidden lg:flex">
-                                <span className="text-sm font-medium text-slate-900 dark:text-white leading-none mb-1">
-                                    {user?.user_metadata?.first_name || 'User'}
-                                </span>
-                                <span className="text-xs text-slate-500 dark:text-slate-400 leading-none">
-                                    Pro Plan
-                                </span>
-                            </div>
+                        {/* Profile & CTA */}
+                        <div className="flex items-center gap-3">
+                            {user ? (
+                                <div className="relative">
+                                    {/* Profile Dropdown Trigger */}
+                                    <button
+                                        onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                        className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary-500/50 dark:hover:border-primary-500/50 transition-all duration-300"
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm shadow-inner group">
+                                            {user.user_metadata?.first_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                                            <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        </div>
+                                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300 hidden sm:block">
+                                            {user.user_metadata?.first_name || 'Agent'}
+                                        </span>
+                                    </button>
 
-                            <div className="relative group cursor-pointer" onClick={() => setMenuOpen(!menuOpen)}>
-                                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-full blur opacity-0 group-hover:opacity-40 transition duration-500"></div>
-                                <div className="relative h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-shrink-0 items-center justify-center overflow-hidden">
-                                    <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
-                                        {userInitials}
-                                    </span>
-                                </div>
-
-                                {/* Dropdown */}
-                                <AnimatePresence>
-                                    {menuOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            transition={{ duration: 0.15 }}
-                                            className="absolute right-0 mt-3 w-48 glass-card border border-slate-200 dark:border-slate-800 p-2 transform origin-top-right z-50 shadow-xl"
-                                        >
-                                            <button
-                                                onClick={handleSignOut}
-                                                className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                                    {/* Profile Dropdown Menu */}
+                                    <AnimatePresence>
+                                        {isProfileOpen && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="absolute right-0 mt-2 w-56 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden glass-nav"
                                             >
-                                                <LogOut className="w-4 h-4" />
-                                                Sign out
-                                            </button>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
+                                                <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800/60">
+                                                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                                                        {user.user_metadata?.first_name} {user.user_metadata?.last_name}
+                                                    </p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                                        {user.email}
+                                                    </p>
+                                                </div>
+                                                <div className="py-1">
+                                                    <Link to="/" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                                        <LayoutDashboard className="w-4 h-4 text-slate-400" /> Dashboard
+                                                    </Link>
+                                                    <Link to="/resumes/new" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                                        <FileText className="w-4 h-4 text-slate-400" /> My Resumes
+                                                    </Link>
+                                                    <button onClick={() => { setIsProfileOpen(false); handleSignOut(); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+                                                        <LogOut className="w-4 h-4 text-red-500" /> Sign out
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-3">
+                                    <Link
+                                        to="/login"
+                                        className="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors hidden sm:block"
+                                    >
+                                        Sign In
+                                    </Link>
+                                    <Link
+                                        to="/signup"
+                                        className="relative group overflow-hidden rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md transition-all duration-300 hover:shadow-glow px-5 py-2"
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-primary-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        <div className="relative flex items-center justify-center font-semibold text-sm">
+                                            Get Started
+                                        </div>
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     </div>
 

@@ -40,40 +40,35 @@ function App() {
     },
     {
       path: '/',
-      element: <ProtectedRoute />,
+      element: <DashboardLayout />,
       children: [
         {
-          element: <DashboardLayout />,
-          children: [
-            {
-              index: true,
-              element: <DashboardPage />,
-            },
-            {
-              path: 'resumes/new',
-              element: <CreateResumeProxy />,
-            },
-            {
-              path: 'analyze',
-              element: <div className="animate-fade-in"><h1 className="text-3xl font-display font-bold dark:text-white">AI Optimizer</h1><p className="mt-2 text-slate-500">Coming soon utilizing Gemini Flash API.</p></div>,
-            },
-            {
-              path: 'settings',
-              element: <div className="animate-fade-in"><h1 className="text-3xl font-display font-bold dark:text-white">Settings</h1><p className="mt-2 text-slate-500">Coming soon.</p></div>,
-            }
-          ]
+          index: true,
+          element: <DashboardPage />,
         },
         {
-          path: 'editor',
-          element: <EditorLayout />,
-          children: [
-            {
-              path: ':id',
-              element: <EditorEntryPoint />
-            }
-          ]
+          path: 'resumes/new',
+          element: <ProtectedRoute><CreateResumeProxy /></ProtectedRoute>,
+        },
+        {
+          path: 'analyze',
+          element: <ProtectedRoute><div className="animate-fade-in"><h1 className="text-3xl font-display font-bold dark:text-white">AI Optimizer</h1><p className="mt-2 text-slate-500">Coming soon utilizing Gemini Flash API.</p></div></ProtectedRoute>,
+        },
+        {
+          path: 'settings',
+          element: <ProtectedRoute><div className="animate-fade-in"><h1 className="text-3xl font-display font-bold dark:text-white">Settings</h1><p className="mt-2 text-slate-500">Coming soon.</p></div></ProtectedRoute>,
         }
-      ],
+      ]
+    },
+    {
+      path: '/editor',
+      element: <ProtectedRoute><EditorLayout /></ProtectedRoute>,
+      children: [
+        {
+          path: ':id',
+          element: <EditorEntryPoint />
+        }
+      ]
     },
     {
       path: '*',

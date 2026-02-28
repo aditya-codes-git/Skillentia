@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Cpu, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -18,6 +18,10 @@ export default function LoginPage() {
     const signIn = useAuthStore((state) => state.signIn);
     const signInWithGoogle = useAuthStore((state) => state.signInWithGoogle);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Default to resolving the root if no state is intercepted
+    const from = location.state?.from?.pathname || '/';
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(loginSchema)
@@ -28,7 +32,7 @@ export default function LoginPage() {
         try {
             await signIn(data.email, data.password);
             toast.success('Welcome back!');
-            navigate('/');
+            navigate(from, { replace: true });
         } catch (error) {
             toast.error(error.message || 'Failed to login');
         } finally {
@@ -63,7 +67,7 @@ export default function LoginPage() {
                     </h2>
                     <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
                         Don't have an account? {' '}
-                        <Link to="/signup" className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-indigo-500 hover:opacity-80 transition-opacity">
+                        <Link to="/signup" state={{ from: location.state?.from }} className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-indigo-500 hover:opacity-80 transition-opacity">
                             Create one now
                         </Link>
                     </p>

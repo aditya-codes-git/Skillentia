@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Cpu, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -20,6 +20,10 @@ export default function SignupPage() {
     const signUp = useAuthStore((state) => state.signUp);
     const signInWithGoogle = useAuthStore((state) => state.signInWithGoogle);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Default to resolving the root if no state is intercepted
+    const from = location.state?.from?.pathname || '/';
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(signupSchema)
@@ -30,7 +34,7 @@ export default function SignupPage() {
         try {
             await signUp(data.email, data.password, data.firstName, data.lastName);
             toast.success('Account created! You can now log in.');
-            navigate('/login');
+            navigate('/login', { state: { from: location.state?.from } });
         } catch (error) {
             toast.error(error.message || 'Failed to sign up');
         } finally {
@@ -65,7 +69,7 @@ export default function SignupPage() {
                     </h2>
                     <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
                         Already registered? {' '}
-                        <Link to="/login" className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500 hover:opacity-80 transition-opacity">
+                        <Link to="/login" state={{ from: location.state?.from }} className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500 hover:opacity-80 transition-opacity">
                             Sign in to your dashboard
                         </Link>
                     </p>
