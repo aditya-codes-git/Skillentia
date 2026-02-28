@@ -1,0 +1,26 @@
+{
+  "name": "skillentia",
+  "version": "1.0.0",
+  "description": "Skillentia — AI-powered resume builder and career optimization platform with real-time preview, structured resume generation, and intelligent analysis using Gemini. Built with React, Supabase, and PostgreSQL using B.L.A.S.T architecture.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aditya-codes-git/Skillentia.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aditya-codes-git/Skillentia/issues"
+  },
+  "homepage": "https://github.com/aditya-codes-git/Skillentia#readme",
+  "dependencies": {
+    "@google/genai": "^1.43.0",
+    "@supabase/supabase-js": "^2.98.0",
+    "dotenv": "^17.3.1"
+  }
+}
