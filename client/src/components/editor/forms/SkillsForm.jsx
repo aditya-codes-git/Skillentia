@@ -3,7 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
 import { Wrench } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import debounce from 'lodash.debounce';
 
 // Skills schema expects arrays of strings. 
 // We will collect them as comma-separated strings in the UI and split them before hitting the store.
@@ -31,8 +32,9 @@ export default function SkillsForm() {
         mode: 'onChange'
     });
 
-    useEffect(() => {
-        const subscription = watch((value) => {
+    // Create a debounced update function that only fires 500ms after edits
+    const debouncedUpdate = useMemo(
+        () => debounce((value) => {
             if (!value) return;
 
             let hasChanges = false;
@@ -56,10 +58,16 @@ export default function SkillsForm() {
                     updateSkills(category, arr);
                 });
             }
-        });
+        }, 500),
+        [skills, updateSkills]
+    );
 
+    useEffect(() => {
+        const subscription = watch((value) => {
+            debouncedUpdate(value);
+        });
         return () => subscription.unsubscribe();
-    }, [watch, skills, updateSkills]);
+    }, [watch, debouncedUpdate]);
 
     return (
         <div className="card p-6 mb-6">

@@ -1,8 +1,11 @@
+import { memo } from 'react';
 import { useResumeStore } from '../../store/useResumeStore';
 
-export default function BasicPreview() {
-    const resume = useResumeStore();
-    const { personal_details, education, experience, skills } = resume;
+const BasicPreview = memo(function BasicPreview() {
+    const personal_details = useResumeStore(state => state.personal_details);
+    const education = useResumeStore(state => state.education);
+    const experience = useResumeStore(state => state.experience);
+    const skills = useResumeStore(state => state.skills);
 
     return (
         <div className="w-full h-full bg-white text-black p-12 text-sm leading-relaxed overflow-hidden shadow-2xl font-sans">
@@ -126,4 +129,6 @@ export default function BasicPreview() {
 
         </div>
     );
-}
+});
+
+export default BasicPreview;

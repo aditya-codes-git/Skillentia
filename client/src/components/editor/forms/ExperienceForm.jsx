@@ -3,8 +3,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
 import { Briefcase, Plus, Trash2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import debounce from 'lodash.debounce';
 
 const experienceSchema = z.object({
     id: z.string(),
@@ -24,7 +25,7 @@ const schema = z.object({
 });
 
 export default function ExperienceForm() {
-    const { experience, setFullResume } = useResumeStore();
+    const { experience } = useResumeStore();
 
     const { register, control, watch, formState: { errors } } = useForm({
         resolver: zodResolver(schema),
@@ -37,12 +38,26 @@ export default function ExperienceForm() {
         name: 'experiences'
     });
 
+    // Debounce the array updates to prevent UI stutter while typing
+    const debouncedUpdate = useMemo(
+        () => debounce((value) => {
+            if (value && value.experiences) {
+                // Sync the entire experience array to the store
+                const currentStore = useResumeStore.getState().experience;
+                if (JSON.stringify(currentStore) !== JSON.stringify(value.experiences)) {
+                    useResumeStore.setState({ experience: value.experiences });
+                }
+            }
+        }, 500),
+        []
+    );
+
     useEffect(() => {
         const subscription = watch((value) => {
-            setFullResume({ experience: value.experiences || [] });
+            debouncedUpdate(value);
         });
         return () => subscription.unsubscribe();
-    }, [watch, setFullResume]);
+    }, [watch, debouncedUpdate]);
 
     const handleAddNew = () => {
         const newEntry = {
@@ -129,11 +144,11 @@ export default function ExperienceForm() {
                         <div className="mb-4 flex items-center gap-2">
                             <input
                                 type="checkbox"
-                                id={`current-${field.id}`}
+                                id={`current - ${field.id} `}
                                 {...register(`experiences.${index}.current`)}
                                 className="rounded text-indigo-600 focus:ring-indigo-500 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700"
                             />
-                            <label htmlFor={`current-${field.id}`} className="text-sm font-medium text-slate-700 dark:text-slate-300">I currently work here</label>
+                            <label htmlFor={`current - ${field.id} `} className="text-sm font-medium text-slate-700 dark:text-slate-300">I currently work here</label>
                         </div>
 
                         <div>

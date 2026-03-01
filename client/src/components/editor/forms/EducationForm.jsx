@@ -3,8 +3,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
 import { GraduationCap, Plus, Trash2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import debounce from 'lodash.debounce';
 
 const educationSchema = z.object({
     id: z.string(),
@@ -23,7 +24,7 @@ const schema = z.object({
 });
 
 export default function EducationForm() {
-    const { education, setFullResume } = useResumeStore();
+    const { education } = useResumeStore(); // Removed setFullResume as it's not directly used here anymore
 
     const { register, control, watch, formState: { errors } } = useForm({
         resolver: zodResolver(schema),
@@ -36,12 +37,26 @@ export default function EducationForm() {
         name: 'educations'
     });
 
+    // Debounce the array updates to prevent UI stutter while typing
+    const debouncedUpdate = useMemo(
+        () => debounce((value) => {
+            if (value && value.educations) {
+                // Sync the entire education array to the store
+                const currentStore = useResumeStore.getState().education;
+                if (JSON.stringify(currentStore) !== JSON.stringify(value.educations)) {
+                    useResumeStore.setState({ education: value.educations });
+                }
+            }
+        }, 500),
+        []
+    );
+
     useEffect(() => {
         const subscription = watch((value) => {
-            setFullResume({ education: value.educations || [] });
+            debouncedUpdate(value);
         });
         return () => subscription.unsubscribe();
-    }, [watch, setFullResume]);
+    }, [watch, debouncedUpdate]);
 
     const handleAddNew = () => {
         const newEntry = {
@@ -132,11 +147,11 @@ export default function EducationForm() {
                         <div className="mb-4 flex items-center gap-2">
                             <input
                                 type="checkbox"
-                                id={`edu-current-${field.id}`}
+                                id={`edu - current - ${field.id} `}
                                 {...register(`educations.${index}.current`)}
                                 className="rounded text-emerald-600 focus:ring-emerald-500 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700"
                             />
-                            <label htmlFor={`edu-current-${field.id}`} className="text-sm font-medium text-slate-700 dark:text-slate-300">I currently study here</label>
+                            <label htmlFor={`edu - current - ${field.id} `} className="text-sm font-medium text-slate-700 dark:text-slate-300">I currently study here</label>
                         </div>
 
                         <div>

@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import debounce from 'lodash.debounce';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
@@ -25,12 +26,19 @@ export default function PersonalDetailsForm() {
         mode: 'onChange'
     });
 
+    // Create a debounced update function that only fires 500ms after the user stops typing
+    // This stops the heavy `BasicPreview` from continuously re-rendering and lagging the input field
+    const debouncedUpdate = useMemo(
+        () => debounce((value) => updatePersonalDetails(value), 500),
+        [updatePersonalDetails]
+    );
+
     useEffect(() => {
         const subscription = watch((value) => {
-            updatePersonalDetails(value);
+            debouncedUpdate(value);
         });
         return () => subscription.unsubscribe();
-    }, [watch, updatePersonalDetails]);
+    }, [watch, debouncedUpdate]);
 
     return (
         <div className="card p-6 mb-6">
