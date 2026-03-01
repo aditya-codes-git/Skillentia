@@ -171,8 +171,8 @@ export default function DashboardPage() {
             </motion.div>
 
             {/* Background glowing decorations */}
-            <div className="fixed top-20 right-0 w-[500px] h-[500px] bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-[100px] pointer-events-none -z-10 animate-float"></div>
-            <div className="fixed bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="fixed top-20 right-0 w-[500px] h-[500px] bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-[100px] pointer-events-none -z-10 animate-float transform-gpu"></div>
+            <div className="fixed bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-float transform-gpu" style={{ animationDelay: '2s' }}></div>
 
         </motion.div>
     );

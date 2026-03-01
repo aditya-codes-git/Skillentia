@@ -86,7 +86,7 @@ export default function EditorLayout() {
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="flex-1 w-1/2 flex flex-col border-r border-slate-200/50 dark:border-slate-800/50 glass-card rounded-none shadow-none z-20"
+                className="flex-1 w-1/2 flex flex-col border-r border-slate-200/50 dark:border-slate-800/50 glass-card rounded-none shadow-none z-20 transform-gpu"
             >
                 <div className="h-14 border-b border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between px-6 gap-2 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md">
                     <div className="flex items-center gap-3">
@@ -123,7 +123,7 @@ export default function EditorLayout() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="flex-1 w-1/2 flex flex-col bg-slate-50/50 dark:bg-[#0a0f1a]/50 backdrop-blur-sm relative z-10"
+                className="flex-1 w-1/2 flex flex-col bg-slate-50/50 dark:bg-[#0a0f1a]/50 backdrop-blur-sm relative z-10 transform-gpu"
             >
                 <div className="h-14 border-b border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between px-6 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md">
                     <div className="flex items-center gap-2">
@@ -134,14 +134,14 @@ export default function EditorLayout() {
                         <button
                             onClick={handleExportDocx}
                             disabled={isExporting}
-                            className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors disabled:opacity-50"
+                            className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors disabled:opacity-50 inline-flex"
                         >
                             <Download className="w-4 h-4" /> Word
                         </button>
                         <button
                             onClick={handleExportPdf}
                             disabled={isExporting}
-                            className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-indigo-600 rounded-xl hover:shadow-glow transition-all duration-300 disabled:opacity-50"
+                            className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-indigo-600 rounded-xl hover:shadow-glow transition-all duration-300 disabled:opacity-50 inline-flex"
                         >
                             <Download className="w-4 h-4" /> PDF
                         </button>
@@ -150,7 +150,7 @@ export default function EditorLayout() {
 
                 <div className="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center custom-scrollbar">
                     {/* A4 Proportion Canvas Wrapper with float animation */}
-                    <div id="preview-container" className="w-[800px] min-h-[1131px] scale-[0.6] sm:scale-75 md:scale-90 origin-top bg-white dark:bg-slate-50 shadow-2xl ring-1 ring-slate-900/5 select-none transition-transform duration-300">
+                    <div id="preview-container" className="w-[800px] min-h-[1131px] scale-[0.6] sm:scale-75 md:scale-90 origin-top bg-white dark:bg-slate-50 shadow-2xl ring-1 ring-slate-900/5 select-none transition-transform duration-300 transform-gpu">
                         <BasicPreview />
                     </div>
                 </div>

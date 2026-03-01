@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 
-export default function AnimatedBackground() {
+const AnimatedBackground = memo(function AnimatedBackground() {
     return (
         <div className="fixed inset-0 overflow-hidden pointer-events-none -z-50 bg-background-light dark:bg-[#0a0f1a] transition-colors duration-500">
             {/* Base Noise Texture */}
@@ -9,8 +10,9 @@ export default function AnimatedBackground() {
             {/* Dark Mode Specific Deep Radial Gradient */}
             <div className="hidden dark:block absolute inset-0 bg-[radial-gradient(circle_at_top,_#1e293b_0%,_transparent_100%)] opacity-50"></div>
 
-            {/* Floating Orbs / Blobs */}
+            {/* Floating Orbs / Blobs with Hardware Acceleration */}
             <motion.div
+                style={{ willChange: 'transform', transform: 'translateZ(0)' }}
                 animate={{
                     x: [0, 30, -20, 0],
                     y: [0, -40, 20, 0],
@@ -21,6 +23,7 @@ export default function AnimatedBackground() {
             />
 
             <motion.div
+                style={{ willChange: 'transform', transform: 'translateZ(0)' }}
                 animate={{
                     x: [0, -40, 30, 0],
                     y: [0, 50, -30, 0],
@@ -31,6 +34,7 @@ export default function AnimatedBackground() {
             />
 
             <motion.div
+                style={{ willChange: 'transform', transform: 'translateZ(0)' }}
                 animate={{
                     x: [0, 50, -50, 0],
                     y: [0, 20, -20, 0],
@@ -40,4 +44,6 @@ export default function AnimatedBackground() {
             />
         </div>
     );
-}
+});
+
+export default AnimatedBackground;
