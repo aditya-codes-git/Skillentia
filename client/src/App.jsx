@@ -10,6 +10,7 @@ import { useAuthStore } from './store/useAuthStore';
 import EditorLayout from './components/editor/EditorLayout';
 import CreateResumeProxy from './pages/resumes/CreateResumeProxy';
 import EditorEntryPoint from './pages/resumes/EditorEntryPoint';
+import MyResumesPage from './pages/resumes/MyResumesPage';
 import { useThemeStore } from './store/useThemeStore';
 import AnimatedBackground from './components/layout/AnimatedBackground';
 
@@ -49,6 +50,10 @@ function App() {
         {
           path: 'resumes/new',
           element: <ProtectedRoute><CreateResumeProxy /></ProtectedRoute>,
+        },
+        {
+          path: 'resumes',
+          element: <ProtectedRoute><MyResumesPage /></ProtectedRoute>,
         },
         {
           path: 'analyze',

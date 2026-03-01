@@ -1,9 +1,82 @@
-import { Eye, Edit3, ArrowLeft, Search, Command } from 'lucide-react';
-import { Outlet, Link } from 'react-router-dom';
+import { Eye, Edit3, ArrowLeft, Search, Command, Download } from 'lucide-react';
+import { Outlet, Link, useNavigate, useParams } from 'react-router-dom';
 import BasicPreview from './BasicPreview';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { useThemeStore } from '../../store/useThemeStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { useResumeStore } from '../../store/useResumeStore';
+import { supabase } from '../../lib/supabase';
+import { exportPdf } from '../../utils/exportPdf';
+import { exportDocx } from '../../utils/exportDocx';
+import toast from 'react-hot-toast';
 
 export default function EditorLayout() {
+    const navigate = useNavigate();
+    const { id: paramsId } = useParams();
+    const [id, setId] = useState(paramsId);
+
+    const theme = useThemeStore((state) => state.theme);
+    const user = useAuthStore((state) => state.user);
+    const resumeData = useResumeStore((state) => state.resumeData);
+
+    const [isExporting, setIsExporting] = useState(false);
+
+    useEffect(() => {
+        return () => { }
+    }, [id, paramsId]);
+
+    const logExport = async (fileName, format) => {
+        if (!user) return;
+        try {
+            const { error } = await supabase.from('resume_exports').insert({
+                user_id: user.id,
+                resume_id: id || null,
+                file_name: fileName,
+                format: format
+            });
+            if (error) throw error;
+        } catch (error) {
+            console.error('Failed to log export:', error);
+        }
+    };
+
+    const handleExportPdf = async () => {
+        if (isExporting) return;
+        setIsExporting(true);
+        const loadingToast = toast.loading('Generating PDF...');
+
+        try {
+            const firstName = user?.user_metadata?.first_name || 'User';
+            const fileName = await exportPdf('preview-container', firstName);
+            await logExport(fileName, 'pdf');
+            toast.success('Resume downloaded successfully.', { id: loadingToast });
+            navigate('/resumes');
+        } catch (error) {
+            toast.error(error.message || 'Failed to export PDF.', { id: loadingToast });
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    const handleExportDocx = async () => {
+        if (isExporting) return;
+        setIsExporting(true);
+        const loadingToast = toast.loading('Generating DOCX...');
+
+        try {
+            const firstName = user?.user_metadata?.first_name || 'User';
+            const fileName = await exportDocx(resumeData, firstName);
+            await logExport(fileName, 'docx');
+            toast.success('Resume downloaded successfully.', { id: loadingToast });
+            navigate('/resumes');
+        } catch (error) {
+            toast.error(error.message || 'Failed to export DOCX.', { id: loadingToast });
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     return (
         <div className="flex h-screen w-full overflow-hidden relative z-10">
             {/* The global AnimatedBackground sits behind this */}
@@ -57,16 +130,27 @@ export default function EditorLayout() {
                         <Eye className="w-4 h-4 text-indigo-500" />
                         <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Live Preview</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <button className="p-1.5 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800/50 text-slate-500 transition-colors">
-                            <Search className="w-4 h-4" />
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleExportDocx}
+                            disabled={isExporting}
+                            className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors disabled:opacity-50"
+                        >
+                            <Download className="w-4 h-4" /> Word
+                        </button>
+                        <button
+                            onClick={handleExportPdf}
+                            disabled={isExporting}
+                            className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-indigo-600 rounded-xl hover:shadow-glow transition-all duration-300 disabled:opacity-50"
+                        >
+                            <Download className="w-4 h-4" /> PDF
                         </button>
                     </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center custom-scrollbar">
                     {/* A4 Proportion Canvas Wrapper with float animation */}
-                    <div className="w-[800px] min-h-[1131px] scale-[0.6] sm:scale-75 md:scale-90 origin-top bg-white dark:bg-slate-50 shadow-2xl ring-1 ring-slate-900/5 select-none transition-transform duration-300">
+                    <div id="preview-container" className="w-[800px] min-h-[1131px] scale-[0.6] sm:scale-75 md:scale-90 origin-top bg-white dark:bg-slate-50 shadow-2xl ring-1 ring-slate-900/5 select-none transition-transform duration-300">
                         <BasicPreview />
                     </div>
                 </div>
