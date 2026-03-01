@@ -2,6 +2,14 @@ import { FileText, Cpu, ArrowRight, Sparkles, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
+import ProductIntroSection from '../components/dashboard/ProductIntroSection';
+import HowItWorksSection from '../components/dashboard/HowItWorksSection';
+import StatsSection from '../components/dashboard/StatsSection';
+import FeaturesSection from '../components/dashboard/FeaturesSection';
+import FaqSection from '../components/dashboard/FaqSection';
+import logoImgLight from '../assets/skillentia_logo.png';
+import logoImgDark from '../assets/skillentia_logo_dark.png';
+
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -32,6 +40,15 @@ export default function DashboardPage() {
         >
             {/* Hero Section */}
             <motion.div variants={itemVariants} className="relative z-10 text-center max-w-3xl mx-auto mt-8">
+                <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    className="flex justify-center mb-8"
+                >
+                    <img src={logoImgLight} alt="Skillentia" className="h-20 w-auto md:h-24 drop-shadow-xl dark:hidden" />
+                    <img src={logoImgDark} alt="Skillentia" className="h-20 w-auto md:h-24 drop-shadow-xl hidden dark:block" />
+                </motion.div>
                 <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -169,6 +186,15 @@ export default function DashboardPage() {
                     </div>
                 </motion.div>
             </motion.div>
+
+            {/* Extended Landing Sections */}
+            <div className="w-full relative z-10 space-y-24 mt-32 border-t border-slate-200 dark:border-slate-800/50 pt-16">
+                <ProductIntroSection />
+                <HowItWorksSection />
+                <FeaturesSection />
+                <StatsSection />
+                <FaqSection />
+            </div>
 
             {/* Background glowing decorations */}
             <div className="fixed top-20 right-0 w-[500px] h-[500px] bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-[100px] pointer-events-none -z-10 animate-float transform-gpu"></div>

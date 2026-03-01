@@ -6,6 +6,8 @@ import { useThemeStore } from '../../store/useThemeStore';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import logoImgLight from '../../assets/skillentia_logo.png';
+import logoImgDark from '../../assets/skillentia_logo_dark.png';
 
 const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -57,25 +59,20 @@ export default function TopNav() {
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className={clsx(
-                    'glass-nav rounded-2xl px-6 flex items-center justify-between transition-all duration-300',
+                    'glass-nav rounded-2xl px-6 flex items-center justify-between transition-all duration-300 relative',
                     scrolled ? 'h-16 shadow-soft' : 'h-20 border-transparent bg-transparent dark:bg-transparent backdrop-blur-none'
                 )}>
 
-                    {/* Left: Logo */}
-                    <div className="flex-shrink-0 flex items-center gap-3">
-                        <div className="relative group">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-xl blur opacity-25 group-hover:opacity-100 transition duration-500 group-hover:duration-200"></div>
-                            <div className="relative p-2 bg-white dark:bg-slate-900 rounded-xl">
-                                <Cpu className="h-6 w-6 text-primary-600 dark:text-primary-400" />
-                            </div>
+                    <Link to="/" className="flex-shrink-0 flex items-center gap-3 group">
+                        <div className="relative">
+                            <div className="absolute -inset-2 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
+                            <img src={logoImgLight} alt="Skillentia Logo" className="h-8 w-auto relative z-10 dark:hidden" />
+                            <img src={logoImgDark} alt="Skillentia Logo" className="h-8 w-auto relative z-10 hidden dark:block" />
                         </div>
-                        <span className="text-xl font-display font-bold tracking-tight text-slate-900 dark:text-white">
-                            Skillentia
-                        </span>
-                    </div>
+                    </Link>
 
                     {/* Center: Desktop Navigation */}
-                    <nav className="hidden md:flex items-center gap-1">
+                    <nav className="hidden md:flex items-center gap-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                         {navigation.map((item) => {
                             const isActive = location.pathname === item.href || (item.href !== '/' && location.pathname.startsWith(item.href));
                             return (
@@ -209,6 +206,6 @@ export default function TopNav() {
 
                 </div>
             </div>
-        </motion.header>
+        </motion.header >
     );
 }
