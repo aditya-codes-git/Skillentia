@@ -1,5 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
+import ParticleBurst from './ParticleBurst';
 
 // Animated counter hook
 function useCounter(end, duration = 2000) {
@@ -32,37 +33,81 @@ function useCounter(end, duration = 2000) {
     return { count, ref };
 }
 
+const stats = [
+    { label: 'Total Resumes Generated', suffix: '+' },
+    { label: 'AI Optimizations Run', gradient: true },
+    { label: 'Active Professionals', suffix: '' },
+];
+
 export default function StatsSection() {
     const resumesCounter = useCounter(14205, 2500);
     const aiOptimizationsCounter = useCounter(58923, 3000);
     const activeUsersCounter = useCounter(8432, 2000);
 
+    const counters = [resumesCounter, aiOptimizationsCounter, activeUsersCounter];
+
     return (
-        <div className="py-16 relative z-10">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-800">
+        <div className="relative py-24 -mx-4 sm:-mx-6 lg:-mx-8 overflow-hidden rounded-3xl">
+            {/* Deep indigo gradient background — Stripe-inspired */}
+            <div
+                className="absolute inset-0 rounded-3xl"
+                style={{
+                    background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 25%, #4338ca 50%, #6366f1 75%, #818cf8 100%)',
+                }}
+            />
+            {/* Subtle secondary radial glow overlay */}
+            <div
+                className="absolute inset-0 rounded-3xl"
+                style={{
+                    background: 'radial-gradient(ellipse at bottom center, rgba(129,140,248,0.25) 0%, transparent 60%)',
+                }}
+            />
 
-                    <div className="py-6 md:py-0 px-4" ref={resumesCounter.ref}>
-                        <div className="text-5xl md:text-6xl font-display font-extrabold text-slate-900 dark:text-white mb-2 tabular-nums">
-                            {resumesCounter.count.toLocaleString()}+
-                        </div>
-                        <p className="text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Total Resumes Generated</p>
-                    </div>
+            {/* Particle Burst Visual */}
+            <ParticleBurst />
 
-                    <div className="py-6 md:py-0 px-4" ref={aiOptimizationsCounter.ref}>
-                        <div className="text-5xl md:text-6xl font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-indigo-500 mb-2 tabular-nums">
-                            {aiOptimizationsCounter.count.toLocaleString()}
-                        </div>
-                        <p className="text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">AI Optimizations Run</p>
-                    </div>
+            {/* Content */}
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
+                {/* Section heading */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="text-center mb-16"
+                >
+                    <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4 tracking-tight">
+                        The backbone of{'\n'}<br />career acceleration
+                    </h2>
+                </motion.div>
 
-                    <div className="py-6 md:py-0 px-4" ref={activeUsersCounter.ref}>
-                        <div className="text-5xl md:text-6xl font-display font-extrabold text-slate-900 dark:text-white mb-2 tabular-nums">
-                            {activeUsersCounter.count.toLocaleString()}
-                        </div>
-                        <p className="text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Active Professionals</p>
-                    </div>
+                {/* Stats grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+                    {/* Horizontal gradient divider line */}
+                    <div className="absolute left-[10%] right-[10%] top-[60%] h-px bg-gradient-to-r from-transparent via-white/20 to-transparent hidden md:block" />
 
+                    {stats.map((stat, idx) => {
+                        const counter = counters[idx];
+                        return (
+                            <div
+                                key={idx}
+                                ref={counter.ref}
+                                className="text-center py-8 px-4"
+                            >
+                                <div
+                                    className={`text-5xl md:text-6xl font-display font-bold mb-3 tabular-nums ${stat.gradient
+                                            ? 'text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-white'
+                                            : 'text-white'
+                                        }`}
+                                >
+                                    {counter.count.toLocaleString()}{stat.suffix || ''}
+                                </div>
+                                <p className="text-sm font-medium text-indigo-200/70 uppercase tracking-widest">
+                                    {stat.label}
+                                </p>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

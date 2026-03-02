@@ -72,8 +72,10 @@ export default function DashboardPage() {
                 {/* Create Resume Card */}
                 <motion.div variants={itemVariants}>
                     <Link to="/resumes/new" className="block h-full group">
-                        <div className="glass-card relative h-full p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(34,197,94,0.3)] dark:hover:shadow-[0_20px_40px_-15px_rgba(34,197,94,0.15)] group-hover:border-primary-500/50">
-                            <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                        <div className="glass-card relative h-full p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-elevation-3 group-hover:border-primary-500/30">
+                            {/* Gradient bottom accent — Stripe-inspired */}
+                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary-400 via-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
 
                             <div className="relative z-10 flex flex-col h-full">
                                 <div className="p-4 bg-primary-100 dark:bg-primary-900/40 rounded-2xl w-max mb-6 group-hover:scale-110 group-hover:bg-primary-500 group-hover:text-white transition-all duration-500">
@@ -97,8 +99,10 @@ export default function DashboardPage() {
                 {/* AI Optimizer Card */}
                 <motion.div variants={itemVariants}>
                     <Link to="/analyze" className="block h-full group">
-                        <div className="glass-card relative h-full p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.3)] dark:hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.15)] group-hover:border-indigo-500/50">
-                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                        <div className="glass-card relative h-full p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-elevation-3 group-hover:border-indigo-500/30">
+                            {/* Gradient bottom accent */}
+                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
 
                             <div className="relative z-10 flex flex-col h-full">
                                 <div className="p-4 bg-indigo-100 dark:bg-indigo-900/40 rounded-2xl w-max mb-6 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
@@ -122,8 +126,10 @@ export default function DashboardPage() {
                 {/* Resume Insights Card */}
                 <motion.div variants={itemVariants}>
                     <Link to="/insights" className="block h-full group">
-                        <div className="glass-card relative h-full p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(217,70,239,0.3)] dark:hover:shadow-[0_20px_40px_-15px_rgba(217,70,239,0.15)] group-hover:border-fuchsia-500/50">
-                            <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                        <div className="glass-card relative h-full p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-elevation-3 group-hover:border-fuchsia-500/30">
+                            {/* Gradient bottom accent */}
+                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-fuchsia-400 via-pink-400 to-rose-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
 
                             <div className="relative z-10 flex flex-col h-full">
                                 <div className="p-4 bg-fuchsia-100 dark:bg-fuchsia-900/40 rounded-2xl w-max mb-6 group-hover:scale-110 group-hover:bg-fuchsia-500 group-hover:text-white transition-all duration-500">

@@ -56,7 +56,9 @@ export default function FeaturesSection() {
                 {features.map((feature, idx) => {
                     const Icon = feature.icon;
                     return (
-                        <motion.div key={idx} variants={itemVariants} className="glass-card p-8 group hover:-translate-y-1 transition-transform duration-300 hover:shadow-glow">
+                        <motion.div key={idx} variants={itemVariants} className="glass-card p-8 group hover:-translate-y-1 transition-all duration-300 hover:shadow-elevation-2 relative overflow-hidden">
+                            {/* Gradient bottom accent */}
+                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             <div className="flex items-start gap-5">
                                 <div className={`p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 ${feature.color}`}>
                                     <Icon className="w-6 h-6" />

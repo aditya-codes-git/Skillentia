@@ -59,23 +59,23 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-primary-600 text-white font-medium shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-primary-600 text-white font-medium shadow-elevation-1 hover:bg-primary-700 hover:-translate-y-px hover:shadow-elevation-2 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform-gpu;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white dark:bg-surface-dark text-slate-700 dark:text-slate-200 font-medium shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white dark:bg-surface-dark text-slate-700 dark:text-slate-200 font-medium shadow-elevation-1 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 hover:-translate-y-px hover:shadow-elevation-2 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform-gpu;
   }
 
   .card {
-    @apply bg-surface-light dark:bg-surface-dark rounded-2xl shadow-soft border border-slate-100 dark:border-slate-800 overflow-hidden transition-all duration-300 hover:shadow-lg;
+    @apply bg-surface-light dark:bg-surface-dark rounded-2xl shadow-elevation-1 border border-slate-200/80 dark:border-white/[0.06] overflow-hidden transition-all duration-300 hover:shadow-elevation-2 hover:-translate-y-0.5 transform-gpu;
   }
 
   .glass-card {
-    @apply backdrop-blur-md bg-white/70 dark:bg-slate-900/40 border border-white/20 dark:border-slate-700/50 shadow-glass rounded-3xl overflow-hidden transition-all duration-300 transform-gpu;
+    @apply backdrop-blur-sm bg-white/80 dark:bg-slate-900/50 border border-slate-200/60 dark:border-white/[0.06] shadow-elevation-1 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-elevation-2 transform-gpu;
   }
 
   .glass-nav {
-    @apply backdrop-blur-sm bg-white/70 dark:bg-[#0a0f1a]/70 border-b border-slate-200/50 dark:border-slate-800/50 transition-all duration-300 transform-gpu;
+    @apply backdrop-blur-md bg-white/80 dark:bg-[#0a0f1a]/80 border-b border-slate-200/60 dark:border-white/[0.06] transition-all duration-300 transform-gpu;
   }
 
   .input-field {
