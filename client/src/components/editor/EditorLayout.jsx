@@ -123,7 +123,7 @@ export default function EditorLayout() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="flex-1 w-1/2 flex flex-col bg-slate-50/50 dark:bg-[#0a0f1a]/50 backdrop-blur-sm relative z-10 transform-gpu"
+                className="flex-1 w-1/2 flex flex-col bg-slate-50/50 dark:bg-[#000000]/50 backdrop-blur-sm relative z-10 transform-gpu"
             >
                 <div className="h-14 border-b border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between px-6 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md">
                     <div className="flex items-center gap-2">

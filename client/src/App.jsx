@@ -92,7 +92,7 @@ function App() {
           style: {
             borderRadius: '1rem',
             background: '#ffffff',
-            color: '#0f172a',
+            color: '#111111',
           }
         }}
       />

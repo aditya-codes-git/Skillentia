@@ -1,3 +1,5 @@
+import colors from 'tailwindcss/colors';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -8,6 +10,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        slate: colors.neutral,
         primary: {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -23,11 +26,11 @@ export default {
         },
         background: {
           light: '#f8fafc',
-          dark: '#0f172a',
+          dark: '#000000',
         },
         surface: {
           light: '#ffffff',
-          dark: '#1e293b',
+          dark: '#111111',
         }
       },
       fontFamily: {
@@ -56,7 +59,7 @@ export default {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'glass-gradient': 'linear-gradient(to right bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03))',
-        'glass-gradient-dark': 'linear-gradient(to right bottom, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.4))',
+        'glass-gradient-dark': 'linear-gradient(to right bottom, rgba(17, 17, 17, 0.7), rgba(0, 0, 0, 0.4))',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',

@@ -3,12 +3,12 @@ import { motion } from 'framer-motion';
 
 const AnimatedBackground = memo(function AnimatedBackground() {
     return (
-        <div className="fixed inset-0 overflow-hidden pointer-events-none -z-50 bg-background-light dark:bg-[#0a0f1a] transition-colors duration-500">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none -z-50 bg-background-light dark:bg-[#000000] transition-colors duration-500">
             {/* Base Noise Texture */}
             <div className="absolute inset-0 bg-noise opacity-[0.03] dark:opacity-[0.05] mix-blend-overlay"></div>
 
             {/* Dark Mode Specific Deep Radial Gradient */}
-            <div className="hidden dark:block absolute inset-0 bg-[radial-gradient(circle_at_top,_#1e293b_0%,_transparent_100%)] opacity-50"></div>
+            <div className="hidden dark:block absolute inset-0 bg-[radial-gradient(circle_at_top,_#111111_0%,_transparent_100%)] opacity-50"></div>
 
             {/* Floating Orbs / Blobs with Hardware Acceleration */}
             <motion.div
