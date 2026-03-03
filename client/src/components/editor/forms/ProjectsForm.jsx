@@ -5,6 +5,8 @@ import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
 import { Briefcase, Plus, Trash2, Calendar, Link as LinkIcon, Code } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import debounce from 'lodash.debounce';
+import { useMemo } from 'react';
 
 // Match "Projects" structure in Schema
 const projectSchema = z.object({
@@ -22,7 +24,8 @@ const projectsSchema = z.object({
 });
 
 export default function ProjectsForm() {
-    const { projects, setFullResume } = useResumeStore();
+    const projects = useResumeStore(state => state.projects);
+    const setFullResume = useResumeStore(state => state.setFullResume);
 
     // Map store state (array of strings for tech) to form state (comma separated string)
     const formattedProjects = projects?.map(p => ({
@@ -43,21 +46,34 @@ export default function ProjectsForm() {
         name: 'projects'
     });
 
-    const formValues = watch('projects');
+    // Debounce the array updates to prevent UI stutter while typing
+    const debouncedUpdate = useMemo(
+        () => debounce((value) => {
+            if (!value) return;
+
+            // Transform the comma separated string back into an array before saving to global store
+            const payloadToSave = value.map(p => ({
+                ...p,
+                technologies: typeof p.technologies === 'string' && p.technologies.trim() !== ''
+                    ? p.technologies.split(',').map(t => t.trim()).filter(Boolean)
+                    : []
+            }));
+
+            // Sync the entire projects array to the store
+            const currentStore = useResumeStore.getState().projects;
+            if (JSON.stringify(currentStore) !== JSON.stringify(payloadToSave)) {
+                useResumeStore.setState({ projects: payloadToSave });
+            }
+        }, 300),
+        []
+    );
 
     useEffect(() => {
-        if (!formValues) return;
-
-        // Transform the comma separated string back into an array before saving to global store
-        const payloadToSave = formValues.map(p => ({
-            ...p,
-            technologies: typeof p.technologies === 'string' && p.technologies.trim() !== ''
-                ? p.technologies.split(',').map(t => t.trim()).filter(Boolean)
-                : []
-        }));
-
-        setFullResume({ projects: payloadToSave });
-    }, [formValues, setFullResume]);
+        const subscription = watch((value) => {
+            debouncedUpdate(value.projects);
+        });
+        return () => subscription.unsubscribe();
+    }, [watch, debouncedUpdate]);
 
     const handleAddProject = () => {
         append({

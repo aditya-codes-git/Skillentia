@@ -18,7 +18,6 @@ export default function EditorLayout() {
 
     const theme = useThemeStore((state) => state.theme);
     const user = useAuthStore((state) => state.user);
-    const resumeData = useResumeStore((state) => state.resumeData);
 
     const [isExporting, setIsExporting] = useState(false);
 
@@ -66,6 +65,7 @@ export default function EditorLayout() {
 
         try {
             const firstName = user?.user_metadata?.first_name || 'User';
+            const resumeData = useResumeStore.getState();
             const fileName = await exportDocx(resumeData, firstName);
             await logExport(fileName, 'docx');
             toast.success('Resume downloaded successfully.', { id: loadingToast });

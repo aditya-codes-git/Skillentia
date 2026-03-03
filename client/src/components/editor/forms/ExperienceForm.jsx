@@ -25,7 +25,7 @@ const schema = z.object({
 });
 
 export default function ExperienceForm() {
-    const { experience } = useResumeStore();
+    const experience = useResumeStore(state => state.experience);
 
     const { register, control, watch, formState: { errors } } = useForm({
         resolver: zodResolver(schema),
@@ -48,7 +48,7 @@ export default function ExperienceForm() {
                     useResumeStore.setState({ experience: value.experiences });
                 }
             }
-        }, 500),
+        }, 300),
         []
     );
 

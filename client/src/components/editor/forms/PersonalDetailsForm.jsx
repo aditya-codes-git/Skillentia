@@ -18,7 +18,8 @@ const personalDetailsSchema = z.object({
 });
 
 export default function PersonalDetailsForm() {
-    const { personal_details, updatePersonalDetails } = useResumeStore();
+    const personal_details = useResumeStore(state => state.personal_details);
+    const updatePersonalDetails = useResumeStore(state => state.updatePersonalDetails);
 
     const { register, watch, formState: { errors } } = useForm({
         resolver: zodResolver(personalDetailsSchema),
@@ -26,10 +27,10 @@ export default function PersonalDetailsForm() {
         mode: 'onChange'
     });
 
-    // Create a debounced update function that only fires 500ms after the user stops typing
+    // Create a debounced update function that only fires 300ms after the user stops typing
     // This stops the heavy `BasicPreview` from continuously re-rendering and lagging the input field
     const debouncedUpdate = useMemo(
-        () => debounce((value) => updatePersonalDetails(value), 500),
+        () => debounce((value) => updatePersonalDetails(value), 300),
         [updatePersonalDetails]
     );
 

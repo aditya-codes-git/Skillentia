@@ -24,7 +24,7 @@ const schema = z.object({
 });
 
 export default function EducationForm() {
-    const { education } = useResumeStore(); // Removed setFullResume as it's not directly used here anymore
+    const education = useResumeStore(state => state.education); // Removed setFullResume as it's not directly used here anymore
 
     const { register, control, watch, formState: { errors } } = useForm({
         resolver: zodResolver(schema),
@@ -47,7 +47,7 @@ export default function EducationForm() {
                     useResumeStore.setState({ education: value.educations });
                 }
             }
-        }, 500),
+        }, 300),
         []
     );
 

@@ -17,7 +17,8 @@ const skillsSchema = z.object({
 });
 
 export default function SkillsForm() {
-    const { skills, updateSkills } = useResumeStore();
+    const skills = useResumeStore(state => state.skills);
+    const updateSkills = useResumeStore(state => state.updateSkills);
 
     const { register, watch, formState: { errors } } = useForm({
         resolver: zodResolver(skillsSchema),
@@ -58,7 +59,7 @@ export default function SkillsForm() {
                     updateSkills(category, arr);
                 });
             }
-        }, 500),
+        }, 300),
         [skills, updateSkills]
     );
 
