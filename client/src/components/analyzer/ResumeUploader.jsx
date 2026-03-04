@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Upload, FileText, X, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import mammoth from 'mammoth';
 
 export default function ResumeUploader({ onFileProcessed, isProcessing }) {
     const [dragActive, setDragActive] = useState(false);
@@ -25,23 +26,42 @@ export default function ResumeUploader({ onFileProcessed, isProcessing }) {
     };
 
     const extractText = async (file) => {
-        // For .txt files, read directly
-        if (file.type === 'text/plain') {
+        const fileType = ACCEPTED_TYPES[file.type];
+
+        // TXT — read directly
+        if (fileType === 'txt') {
             return await file.text();
         }
-        // For PDF/DOCX, we read as text (basic extraction)
-        // In production, you'd use pdf.js or mammoth.js
-        // For now, we'll read as text which works for text-layer PDFs
-        try {
-            const text = await file.text();
-            // Clean the extracted text
-            return text
-                .replace(/[^\x20-\x7E\n\r\t]/g, ' ') // Remove non-printable chars
-                .replace(/\s+/g, ' ')                    // Normalize whitespace
-                .trim();
-        } catch {
-            throw new Error('Failed to extract text from file.');
+
+        // DOCX — use mammoth.js for proper parsing
+        if (fileType === 'docx') {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const result = await mammoth.extractRawText({ arrayBuffer });
+                return result.value.trim();
+            } catch {
+                throw new Error('Failed to read DOCX file. The file may be corrupted.');
+            }
         }
+
+        // PDF — read as text (basic text-layer extraction)
+        if (fileType === 'pdf') {
+            try {
+                const text = await file.text();
+                const cleaned = text
+                    .replace(/[^\x20-\x7E\n\r\t]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+                if (cleaned.length < 50) {
+                    throw new Error('Could not extract text from this PDF. It may be image-based. Try pasting your resume text directly.');
+                }
+                return cleaned;
+            } catch (err) {
+                throw new Error(err.message || 'Failed to extract text from PDF.');
+            }
+        }
+
+        throw new Error('Unsupported file type.');
     };
 
     const handleFile = useCallback(async (file) => {
