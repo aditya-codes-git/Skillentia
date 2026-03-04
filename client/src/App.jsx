@@ -13,6 +13,9 @@ import EditorEntryPoint from './pages/resumes/EditorEntryPoint';
 import MyResumesPage from './pages/resumes/MyResumesPage';
 import { useThemeStore } from './store/useThemeStore';
 import AnimatedBackground from './components/layout/AnimatedBackground';
+import AnalyzePage from './pages/analyzer/AnalyzePage';
+import AnalysisResultsPage from './pages/analyzer/AnalysisResultsPage';
+import AnalysisHistoryPage from './pages/analyzer/AnalysisHistoryPage';
 
 function App() {
   const initialize = useAuthStore((state) => state.initialize);
@@ -57,7 +60,15 @@ function App() {
         },
         {
           path: 'analyze',
-          element: <ProtectedRoute><div className="animate-fade-in"><h1 className="text-3xl font-display font-bold dark:text-white">AI Optimizer</h1><p className="mt-2 text-slate-500">Coming soon utilizing Gemini Flash API.</p></div></ProtectedRoute>,
+          element: <ProtectedRoute><AnalyzePage /></ProtectedRoute>,
+        },
+        {
+          path: 'analyze/results/:id',
+          element: <ProtectedRoute><AnalysisResultsPage /></ProtectedRoute>,
+        },
+        {
+          path: 'analyze/history',
+          element: <ProtectedRoute><AnalysisHistoryPage /></ProtectedRoute>,
         },
         {
           path: 'settings',
