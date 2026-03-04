@@ -1,6 +1,5 @@
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useEffect, useMemo } from 'react';
-import debounce from 'lodash.debounce';
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
@@ -35,21 +34,15 @@ export default function AchievementsForm() {
         name: 'achievements'
     });
 
-    const formAchievements = watch('achievements');
-
-    const debouncedUpdate = useMemo(
-        () => debounce((data) => {
-            if (data) {
-                useResumeStore.setState({ achievements: [...data] });
-            }
-        }, 300),
-        []
-    );
-
     useEffect(() => {
-        debouncedUpdate(formAchievements);
-        return () => debouncedUpdate.cancel();
-    }, [formAchievements, debouncedUpdate]);
+        const subscription = watch((value) => {
+            if (value && value.achievements) {
+                // Deep clone to sever RHF mutability and force Zustand UI update
+                useResumeStore.setState({ achievements: JSON.parse(JSON.stringify(value.achievements)) });
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [watch]);
 
     const handleAddAchievement = () => {
         append({

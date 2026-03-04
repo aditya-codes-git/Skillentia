@@ -3,9 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
 import { Component, Plus, Trash2 } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import debounce from 'lodash.debounce';
 
 const customItemSchema = z.object({
     id: z.string(),
@@ -43,22 +42,14 @@ export default function CustomSectionForm() {
         name: 'custom_section.items'
     });
 
-    const formCustomSection = watch('custom_section');
-
-    const debouncedUpdate = useMemo(
-        () => debounce((data) => {
-            if (data) {
-                // Spread items into a new array so Zustand evaluates it as a state change
-                useResumeStore.setState({ custom_section: { ...data, items: data.items ? [...data.items] : [] } });
-            }
-        }, 300),
-        []
-    );
-
     useEffect(() => {
-        debouncedUpdate(formCustomSection);
-        return () => debouncedUpdate.cancel();
-    }, [formCustomSection, debouncedUpdate]);
+        const subscription = watch((value) => {
+            if (value && value.custom_section) {
+                useResumeStore.setState({ custom_section: JSON.parse(JSON.stringify(value.custom_section)) });
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [watch]);
 
     const handleAddNew = () => {
         append({

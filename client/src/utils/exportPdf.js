@@ -13,8 +13,14 @@ export const exportPdf = async (elementId, userFirstName) => {
         margin: 0,
         filename: fileName,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            windowWidth: 800 // Lock the capture width to exactly match the preview container
+        },
+        jsPDF: { unit: 'px', format: [800, 1131], orientation: 'portrait' }, // Match container exactly to prevent 2nd page wrap
+        pagebreak: { mode: ['avoid-all'] }
     };
 
     try {
