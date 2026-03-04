@@ -42,10 +42,11 @@ export default function TopNav() {
         }
     };
 
-    // userInitials is no longer directly used in the new profile dropdown, but keeping it for potential future use or if other parts of the code still rely on it.
-    const userInitials = user?.user_metadata?.first_name
-        ? `${user.user_metadata.first_name[0]}${user.user_metadata.last_name ? user.user_metadata.last_name[0] : ''}`
-        : user?.email?.[0]?.toUpperCase() || 'U';
+    // Get display name — Google OAuth uses full_name/name, email signup uses first_name
+    const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name ||
+        (user?.user_metadata?.first_name ? `${user.user_metadata.first_name}${user.user_metadata.last_name ? ` ${user.user_metadata.last_name}` : ''}` : null);
+    const firstName = displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
+    const userInitial = firstName.charAt(0).toUpperCase();
 
     return (
         <motion.header
@@ -132,11 +133,11 @@ export default function TopNav() {
                                         className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary-500/50 dark:hover:border-primary-500/50 transition-all duration-300"
                                     >
                                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm shadow-inner group">
-                                            {user.user_metadata?.first_name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                                            {userInitial}
                                             <div className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                         </div>
                                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300 hidden sm:block">
-                                            {user.user_metadata?.first_name || 'Agent'}
+                                            {firstName}
                                         </span>
                                     </button>
 
@@ -152,7 +153,7 @@ export default function TopNav() {
                                             >
                                                 <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800/60">
                                                     <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                                                        {user.user_metadata?.first_name} {user.user_metadata?.last_name}
+                                                        {displayName || user?.email}
                                                     </p>
                                                     <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                                                         {user.email}
