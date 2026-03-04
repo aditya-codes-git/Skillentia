@@ -238,24 +238,51 @@ RESUME TEXT:
 ${resumeText}
 `;
 
-    // Step 3: Call Gemini via @google/genai
+    // Step 3: Call Gemini via @google/genai (with retry for rate limits)
     const genai = new GoogleGenAI({ apiKey });
 
-    const response = await genai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-        config: {
-            temperature: 0.1,
-            responseMimeType: 'application/json'
-        }
-    });
-
-    const aiText = response.text;
     let aiResult;
-    try {
-        aiResult = JSON.parse(aiText);
-    } catch {
-        throw new Error('AI returned invalid JSON. Please try again.');
+    const MAX_RETRIES = 3;
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const response = await genai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: prompt,
+                config: {
+                    temperature: 0.1,
+                    responseMimeType: 'application/json'
+                }
+            });
+
+            const aiText = response.text;
+            try {
+                aiResult = JSON.parse(aiText);
+            } catch {
+                throw new Error('AI returned invalid JSON. Please try again.');
+            }
+            break; // Success — exit retry loop
+        } catch (err) {
+            const isRateLimit = err?.message?.includes('429') ||
+                err?.message?.includes('RESOURCE_EXHAUSTED') ||
+                err?.message?.includes('quota') ||
+                err?.status === 429;
+
+            if (isRateLimit && attempt < MAX_RETRIES) {
+                // Extract retry delay from error or default to 30s
+                const delayMatch = err.message?.match(/retry in ([\d.]+)s/i);
+                const waitSecs = delayMatch ? Math.ceil(parseFloat(delayMatch[1])) + 2 : 30;
+                console.log(`Rate limited. Waiting ${waitSecs}s before retry ${attempt + 1}/${MAX_RETRIES}...`);
+                await new Promise(resolve => setTimeout(resolve, waitSecs * 1000));
+                continue;
+            }
+
+            throw new Error(
+                isRateLimit
+                    ? `Gemini rate limit exceeded. Please wait 30 seconds and try again.`
+                    : (err.message || 'AI analysis failed.')
+            );
+        }
     }
 
     // Step 4: Post-process
