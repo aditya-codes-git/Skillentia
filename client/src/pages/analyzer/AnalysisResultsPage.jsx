@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Cpu, RotateCw } from 'lucide-react';
 import { useAnalyzerStore } from '../../store/useAnalyzerStore';
@@ -22,6 +22,7 @@ const itemVariants = {
 
 export default function AnalysisResultsPage() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { currentAnalysis, fetchAnalysis } = useAnalyzerStore();
 
     useEffect(() => {
@@ -29,6 +30,18 @@ export default function AnalysisResultsPage() {
             fetchAnalysis(id);
         }
     }, [id, currentAnalysis, fetchAnalysis]);
+
+    // Redirect to analyze page if no data after 3 seconds
+    useEffect(() => {
+        if (!currentAnalysis) {
+            const timeout = setTimeout(() => {
+                if (!useAnalyzerStore.getState().currentAnalysis) {
+                    navigate('/analyze');
+                }
+            }, 3000);
+            return () => clearTimeout(timeout);
+        }
+    }, [currentAnalysis, navigate]);
 
     if (!currentAnalysis) {
         return (

@@ -42,15 +42,11 @@ export default function AnalyzePage() {
             const result = await analyzeResume(resumeText, jobDescription || null);
 
             setActiveStep(4);
-            toast.success(result.cached ? 'Loaded cached analysis.' : 'Analysis complete!');
+            toast.success('Analysis complete!');
 
+            // Navigate after a brief delay to show the completed pipeline
             setTimeout(() => {
-                if (result.analysis_id) {
-                    navigate(`/analyze/results/${result.analysis_id}`);
-                } else {
-                    // Store in session if no DB ID
-                    navigate('/analyze/results/latest');
-                }
+                navigate('/analyze/results/latest');
             }, 800);
         } catch (error) {
             toast.error(error.message || 'Analysis failed.');
@@ -95,8 +91,8 @@ export default function AnalyzePage() {
                     {pipelineSteps.map((step, i) => (
                         <div key={i} className="flex flex-col items-center flex-1">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${i <= activeStep
-                                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30'
-                                    : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
+                                ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30'
+                                : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
                                 }`}>
                                 {i < activeStep ? '✓' : i + 1}
                             </div>
