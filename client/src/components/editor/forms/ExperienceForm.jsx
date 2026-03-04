@@ -3,20 +3,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
 import { Briefcase, Plus, Trash2 } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import debounce from 'lodash.debounce';
 
 const experienceSchema = z.object({
     id: z.string(),
-    company: z.string().min(1, 'Company name is required'),
-    position: z.string().min(1, 'Position is required'),
+    company_name: z.string().min(1, 'Company name is required'),
+    job_title: z.string().min(1, 'Position is required'),
     location: z.string().optional(),
     start_date: z.string().min(1, 'Start date is required'),
     end_date: z.string().optional(),
-    current: z.boolean(),
-    description: z.string().optional(),
-    bullets: z.array(z.string()).optional() // Storing strictly as array per schema
+    is_current: z.boolean(),
+    experience_summary: z.string().optional(),
+    responsibilities: z.array(z.string()).optional() // Storing strictly as array per schema
 });
 
 // Since the store holds an array of experiences, we wrap the schema
@@ -27,7 +26,7 @@ const schema = z.object({
 export default function ExperienceForm() {
     const experience = useResumeStore(state => state.experience);
 
-    const { register, control, watch, formState: { errors } } = useForm({
+    const { register, control, watch, getValues, formState: { errors } } = useForm({
         resolver: zodResolver(schema),
         defaultValues: { experiences: experience },
         mode: 'onChange'
@@ -38,38 +37,27 @@ export default function ExperienceForm() {
         name: 'experiences'
     });
 
-    // Debounce the array updates to prevent UI stutter while typing
-    const debouncedUpdate = useMemo(
-        () => debounce((value) => {
-            if (value && value.experiences) {
-                // Sync the entire experience array to the store
-                const currentStore = useResumeStore.getState().experience;
-                if (JSON.stringify(currentStore) !== JSON.stringify(value.experiences)) {
-                    useResumeStore.setState({ experience: value.experiences });
-                }
-            }
-        }, 300),
-        []
-    );
-
     useEffect(() => {
         const subscription = watch((value) => {
-            debouncedUpdate(value);
+            if (value && value.experiences) {
+                // Instantly sync the deeply cloned array to global store for zero lag
+                useResumeStore.setState({ experience: JSON.parse(JSON.stringify(value.experiences)) });
+            }
         });
         return () => subscription.unsubscribe();
-    }, [watch, debouncedUpdate]);
+    }, [watch]);
 
     const handleAddNew = () => {
         const newEntry = {
             id: uuidv4(),
-            company: '',
-            position: '',
+            company_name: '',
+            job_title: '',
             location: '',
             start_date: '',
             end_date: '',
-            current: false,
-            description: '',
-            bullets: []
+            is_current: false,
+            experience_summary: '',
+            responsibilities: []
         };
         append(newEntry);
     };
@@ -111,14 +99,14 @@ export default function ExperienceForm() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 pr-10">
                             <div>
-                                <label className="label">Position / Job Title</label>
-                                <input {...register(`experiences.${index}.position`)} className="input-field" placeholder="Software Engineer" />
-                                {errors?.experiences?.[index]?.position && <p className="text-red-500 text-xs mt-1">{errors.experiences[index].position.message}</p>}
+                                <label className="label">Job Title</label>
+                                <input {...register(`experiences.${index}.job_title`)} className="input-field" placeholder="Software Engineer" />
+                                {errors?.experiences?.[index]?.job_title && <p className="text-red-500 text-xs mt-1">{errors.experiences[index].job_title.message}</p>}
                             </div>
                             <div>
                                 <label className="label">Company Name</label>
-                                <input {...register(`experiences.${index}.company`)} className="input-field" placeholder="Acme Corp" />
-                                {errors?.experiences?.[index]?.company && <p className="text-red-500 text-xs mt-1">{errors.experiences[index].company.message}</p>}
+                                <input {...register(`experiences.${index}.company_name`)} className="input-field" placeholder="Acme Corp" />
+                                {errors?.experiences?.[index]?.company_name && <p className="text-red-500 text-xs mt-1">{errors.experiences[index].company_name.message}</p>}
                             </div>
                             <div>
                                 <label className="label">Location</label>
@@ -135,7 +123,7 @@ export default function ExperienceForm() {
                                         {...register(`experiences.${index}.end_date`)}
                                         type="month"
                                         className="input-field text-sm disabled:opacity-50"
-                                        disabled={watch(`experiences.${index}.current`)}
+                                        disabled={watch(`experiences.${index}.is_current`)}
                                     />
                                 </div>
                             </div>
@@ -144,17 +132,17 @@ export default function ExperienceForm() {
                         <div className="mb-4 flex items-center gap-2">
                             <input
                                 type="checkbox"
-                                id={`current - ${field.id} `}
-                                {...register(`experiences.${index}.current`)}
+                                id={`current-${field.id}`}
+                                {...register(`experiences.${index}.is_current`)}
                                 className="rounded text-indigo-600 focus:ring-indigo-500 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700"
                             />
-                            <label htmlFor={`current - ${field.id} `} className="text-sm font-medium text-slate-700 dark:text-slate-300">I currently work here</label>
+                            <label htmlFor={`current-${field.id}`} className="text-sm font-medium text-slate-700 dark:text-slate-300">I currently work here</label>
                         </div>
 
                         <div>
-                            <label className="label">Description & Achievements</label>
+                            <label className="label">Experience Summary / Responsibilities</label>
                             <textarea
-                                {...register(`experiences.${index}.description`)}
+                                {...register(`experiences.${index}.experience_summary`)}
                                 rows={4}
                                 className="input-field resize-none"
                                 placeholder="Describe your responsibilities and achievements. Use bullet points for ATS optimization (- Built architecture...)"

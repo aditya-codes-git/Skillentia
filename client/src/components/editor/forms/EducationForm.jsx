@@ -3,20 +3,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
 import { GraduationCap, Plus, Trash2 } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import debounce from 'lodash.debounce';
 
 const educationSchema = z.object({
     id: z.string(),
-    institution: z.string().min(1, 'Institution is required'),
+    institution_name: z.string().min(1, 'Institution is required'),
+    institution_location: z.string().optional(),
     degree: z.string().min(1, 'Degree is required'),
     field_of_study: z.string().optional(),
     start_date: z.string().min(1, 'Start date is required'),
     end_date: z.string().optional(),
-    current: z.boolean(),
+    is_current: z.boolean(),
     gpa: z.string().optional(),
-    description: z.string().optional()
+    education_description: z.string().optional()
 });
 
 const schema = z.object({
@@ -26,7 +26,7 @@ const schema = z.object({
 export default function EducationForm() {
     const education = useResumeStore(state => state.education); // Removed setFullResume as it's not directly used here anymore
 
-    const { register, control, watch, formState: { errors } } = useForm({
+    const { register, control, watch, getValues, formState: { errors } } = useForm({
         resolver: zodResolver(schema),
         defaultValues: { educations: education },
         mode: 'onChange'
@@ -37,38 +37,28 @@ export default function EducationForm() {
         name: 'educations'
     });
 
-    // Debounce the array updates to prevent UI stutter while typing
-    const debouncedUpdate = useMemo(
-        () => debounce((value) => {
-            if (value && value.educations) {
-                // Sync the entire education array to the store
-                const currentStore = useResumeStore.getState().education;
-                if (JSON.stringify(currentStore) !== JSON.stringify(value.educations)) {
-                    useResumeStore.setState({ education: value.educations });
-                }
-            }
-        }, 300),
-        []
-    );
-
     useEffect(() => {
         const subscription = watch((value) => {
-            debouncedUpdate(value);
+            if (value && value.educations) {
+                // Instantly sync the deeply cloned array to global store for zero lag
+                useResumeStore.setState({ education: JSON.parse(JSON.stringify(value.educations)) });
+            }
         });
         return () => subscription.unsubscribe();
-    }, [watch, debouncedUpdate]);
+    }, [watch]);
 
     const handleAddNew = () => {
         const newEntry = {
             id: uuidv4(),
-            institution: '',
+            institution_name: '',
+            institution_location: '',
             degree: '',
             field_of_study: '',
             start_date: '',
             end_date: '',
-            current: false,
+            is_current: false,
             gpa: '',
-            description: ''
+            education_description: ''
         };
         append(newEntry);
     };
@@ -109,10 +99,14 @@ export default function EducationForm() {
                         <input type="hidden" {...register(`educations.${index}.id`)} />
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 pr-10">
-                            <div className="md:col-span-2">
+                            <div>
                                 <label className="label">Institution / University</label>
-                                <input {...register(`educations.${index}.institution`)} className="input-field" placeholder="University of Technology" />
-                                {errors?.educations?.[index]?.institution && <p className="text-red-500 text-xs mt-1">{errors.educations[index].institution.message}</p>}
+                                <input {...register(`educations.${index}.institution_name`)} className="input-field" placeholder="University of Technology" />
+                                {errors?.educations?.[index]?.institution_name && <p className="text-red-500 text-xs mt-1">{errors.educations[index].institution_name.message}</p>}
+                            </div>
+                            <div>
+                                <label className="label">Location</label>
+                                <input {...register(`educations.${index}.institution_location`)} className="input-field" placeholder="New York, NY" />
                             </div>
                             <div>
                                 <label className="label">Degree / Certificate</label>
@@ -134,7 +128,7 @@ export default function EducationForm() {
                                         {...register(`educations.${index}.end_date`)}
                                         type="month"
                                         className="input-field text-sm disabled:opacity-50"
-                                        disabled={watch(`educations.${index}.current`)}
+                                        disabled={watch(`educations.${index}.is_current`)}
                                     />
                                 </div>
                             </div>
@@ -147,17 +141,17 @@ export default function EducationForm() {
                         <div className="mb-4 flex items-center gap-2">
                             <input
                                 type="checkbox"
-                                id={`edu - current - ${field.id} `}
-                                {...register(`educations.${index}.current`)}
+                                id={`edu-current-${field.id}`}
+                                {...register(`educations.${index}.is_current`)}
                                 className="rounded text-emerald-600 focus:ring-emerald-500 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700"
                             />
-                            <label htmlFor={`edu - current - ${field.id} `} className="text-sm font-medium text-slate-700 dark:text-slate-300">I currently study here</label>
+                            <label htmlFor={`edu-current-${field.id}`} className="text-sm font-medium text-slate-700 dark:text-slate-300">I currently study here</label>
                         </div>
 
                         <div>
                             <label className="label">Description / Related Coursework</label>
                             <textarea
-                                {...register(`educations.${index}.description`)}
+                                {...register(`educations.${index}.education_description`)}
                                 rows={2}
                                 className="input-field resize-none"
                                 placeholder="List key courses, honors, or activities..."

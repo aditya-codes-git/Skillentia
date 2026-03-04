@@ -24,6 +24,12 @@ const HeaderPreview = memo(function HeaderPreview() {
                         <a href={personal_details.linkedin_url} target="_blank" rel="noreferrer" className="text-blue-600 dark:text-blue-400">LinkedIn</a>
                     </>
                 )}
+                {personal_details.github_url && (
+                    <>
+                        <span>•</span>
+                        <a href={personal_details.github_url} target="_blank" rel="noreferrer" className="text-blue-600 dark:text-blue-400">GitHub</a>
+                    </>
+                )}
                 {personal_details.portfolio_url && (
                     <>
                         <span>•</span>
@@ -55,19 +61,24 @@ const ExperiencePreview = memo(function ExperiencePreview() {
                 {experience.map(exp => (
                     <div key={exp.id}>
                         <div className="flex justify-between font-bold text-slate-800">
-                            <span>{exp.position || 'Position'}</span>
+                            <span>{exp.job_title || 'Job Title'}</span>
                             <span>
-                                {exp.start_date || 'Start'} – {exp.current ? 'Present' : (exp.end_date || 'End')}
+                                {exp.start_date || 'Start'} – {exp.is_current ? 'Present' : (exp.end_date || 'End')}
                             </span>
                         </div>
                         <div className="flex justify-between text-slate-600 italic text-xs mb-2">
-                            <span>{exp.company || 'Company'}</span>
+                            <span>{exp.company_name || 'Company Name'}</span>
                             <span>{exp.location || 'Location'}</span>
                         </div>
-                        {exp.description && (
+                        {exp.experience_summary && (
                             <p className="whitespace-pre-wrap text-slate-700 text-xs">
-                                {exp.description}
+                                {exp.experience_summary}
                             </p>
+                        )}
+                        {exp.responsibilities && exp.responsibilities.length > 0 && (
+                            <ul className="list-disc list-inside text-slate-700 text-xs mt-1 space-y-1">
+                                {exp.responsibilities.map((r, i) => <li key={i}>{r}</li>)}
+                            </ul>
                         )}
                     </div>
                 ))}
@@ -86,17 +97,17 @@ const EducationPreview = memo(function EducationPreview() {
                 {education.map(edu => (
                     <div key={edu.id}>
                         <div className="flex justify-between font-bold text-slate-800">
-                            <span>{edu.institution || 'University'}</span>
+                            <span>{edu.institution_name || 'Institution Name'}</span>
                             <span>
-                                {edu.start_date || 'Start'} – {edu.current ? 'Present' : (edu.end_date || 'End')}
+                                {edu.start_date || 'Start'} – {edu.is_current ? 'Present' : (edu.end_date || 'End')}
                             </span>
                         </div>
                         <div className="flex justify-between text-slate-600 italic text-xs mb-1">
                             <span>{edu.degree} {edu.field_of_study ? `in ${edu.field_of_study}` : ''}</span>
                             {edu.gpa && <span>GPA: {edu.gpa}</span>}
                         </div>
-                        {edu.description && (
-                            <p className="text-slate-700 text-xs mt-1">{edu.description}</p>
+                        {edu.education_description && (
+                            <p className="text-slate-700 text-xs mt-1">{edu.education_description}</p>
                         )}
                     </div>
                 ))}
@@ -117,8 +128,8 @@ const SkillsPreview = memo(function SkillsPreview() {
                 {skills.technical_skills?.length > 0 && (
                     <p><span className="font-bold">Core:</span> {skills.technical_skills.join(', ')}</p>
                 )}
-                {skills.languages?.length > 0 && (
-                    <p><span className="font-bold">Languages:</span> {skills.languages.join(', ')}</p>
+                {skills.programming_languages?.length > 0 && (
+                    <p><span className="font-bold">Languages:</span> {skills.programming_languages.join(', ')}</p>
                 )}
                 {skills.frameworks?.length > 0 && (
                     <p><span className="font-bold">Frameworks:</span> {skills.frameworks.join(', ')}</p>
@@ -134,6 +145,88 @@ const SkillsPreview = memo(function SkillsPreview() {
     );
 });
 
+const ProjectsPreview = memo(function ProjectsPreview() {
+    const projects = useResumeStore(state => state.projects);
+    if (!projects || projects.length === 0) return null;
+    return (
+        <div className="mb-6">
+            <h2 className="text-sm font-bold uppercase text-slate-800 border-b border-slate-800 pb-1 mb-3 tracking-widest">Projects</h2>
+            <div className="space-y-4">
+                {projects.map(proj => (
+                    <div key={proj.id}>
+                        <div className="flex justify-between font-bold text-slate-800">
+                            <span>
+                                {proj.project_name || 'Project Name'}
+                                {proj.project_link && <a href={proj.project_link} target="_blank" rel="noreferrer" className="ml-2 text-blue-600 font-normal italic text-xs">[Link]</a>}
+                            </span>
+                            <span>{proj.start_date || 'Start'} – {proj.end_date || 'End'}</span>
+                        </div>
+                        {proj.technologies_used && proj.technologies_used.length > 0 && (
+                            <div className="text-xs text-slate-600 italic">Core Tech: {proj.technologies_used.join(', ')}</div>
+                        )}
+                        {proj.project_description && (
+                            <p className="whitespace-pre-wrap text-slate-700 text-xs mt-1">
+                                {proj.project_description}
+                            </p>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+});
+
+const AchievementsPreview = memo(function AchievementsPreview() {
+    const achievements = useResumeStore(state => state.achievements);
+    if (!achievements || achievements.length === 0) return null;
+    return (
+        <div className="mb-6">
+            <h2 className="text-sm font-bold uppercase text-slate-800 border-b border-slate-800 pb-1 mb-3 tracking-widest">Achievements & Awards</h2>
+            <div className="space-y-3">
+                {achievements.map(ach => (
+                    <div key={ach.id}>
+                        <div className="flex justify-between font-bold text-slate-800 text-sm">
+                            <span>{ach.achievement_title || 'Award Title'}</span>
+                            <span>{ach.achievement_date || 'Date'}</span>
+                        </div>
+                        {ach.achievement_description && (
+                            <p className="text-slate-700 text-xs mt-0.5">{ach.achievement_description}</p>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+});
+
+const CustomSectionPreview = memo(function CustomSectionPreview() {
+    const custom_section = useResumeStore(state => state.custom_section);
+    if (!custom_section || !custom_section.items || custom_section.items.length === 0) return null;
+    return (
+        <div className="mb-6">
+            <h2 className="text-sm font-bold uppercase text-slate-800 border-b border-slate-800 pb-1 mb-3 tracking-widest">{custom_section.section_title || 'Custom Section'}</h2>
+            <div className="space-y-4">
+                {custom_section.items.map(item => (
+                    <div key={item.id}>
+                        <div className="flex justify-between font-bold text-slate-800">
+                            <span>{item.title || 'Title'}</span>
+                            <span>{item.date_range}</span>
+                        </div>
+                        {item.subtitle && (
+                            <div className="text-slate-600 italic text-xs mb-1">{item.subtitle}</div>
+                        )}
+                        {item.description && (
+                            <p className="whitespace-pre-wrap text-slate-700 text-xs mt-1">
+                                {item.description}
+                            </p>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+});
+
 const BasicPreview = memo(function BasicPreview() {
     return (
         <div className="w-full h-full bg-white text-black p-12 text-sm leading-relaxed overflow-hidden shadow-2xl font-sans">
@@ -142,7 +235,10 @@ const BasicPreview = memo(function BasicPreview() {
             <hr className="border-slate-300 my-4" />
             <ExperiencePreview />
             <EducationPreview />
+            <ProjectsPreview />
             <SkillsPreview />
+            <AchievementsPreview />
+            <CustomSectionPreview />
         </div>
     );
 });

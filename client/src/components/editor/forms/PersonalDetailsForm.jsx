@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useEffect, useMemo } from 'react';
-import debounce from 'lodash.debounce';
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
@@ -13,6 +12,7 @@ const personalDetailsSchema = z.object({
     phone: z.string().optional(),
     location: z.string().optional(),
     linkedin_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+    github_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
     portfolio_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
     summary: z.string().optional()
 });
@@ -27,19 +27,13 @@ export default function PersonalDetailsForm() {
         mode: 'onChange'
     });
 
-    // Create a debounced update function that only fires 300ms after the user stops typing
-    // This stops the heavy `BasicPreview` from continuously re-rendering and lagging the input field
-    const debouncedUpdate = useMemo(
-        () => debounce((value) => updatePersonalDetails(value), 300),
-        [updatePersonalDetails]
-    );
-
     useEffect(() => {
         const subscription = watch((value) => {
-            debouncedUpdate(value);
+            // Use deep clone to completely sever object references from RHF to Zustand
+            updatePersonalDetails(JSON.parse(JSON.stringify(value)));
         });
         return () => subscription.unsubscribe();
-    }, [watch, debouncedUpdate]);
+    }, [watch, updatePersonalDetails]);
 
     return (
         <div className="card p-6 mb-6">
@@ -80,8 +74,13 @@ export default function PersonalDetailsForm() {
                     {errors.linkedin_url && <p className="text-red-500 text-xs mt-1">{errors.linkedin_url.message}</p>}
                 </div>
                 <div>
-                    <label className="label">Portfolio / GitHub URL</label>
-                    <input {...register('portfolio_url')} className="input-field" placeholder="https://github.com/janedoe" />
+                    <label className="label">GitHub URL</label>
+                    <input {...register('github_url')} className="input-field" placeholder="https://github.com/janedoe" />
+                    {errors.github_url && <p className="text-red-500 text-xs mt-1">{errors.github_url.message}</p>}
+                </div>
+                <div>
+                    <label className="label">Portfolio URL</label>
+                    <input {...register('portfolio_url')} className="input-field" placeholder="https://janedoe.com" />
                     {errors.portfolio_url && <p className="text-red-500 text-xs mt-1">{errors.portfolio_url.message}</p>}
                 </div>
             </div>

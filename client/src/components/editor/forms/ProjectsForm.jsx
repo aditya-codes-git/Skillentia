@@ -3,18 +3,16 @@ import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
-import { Briefcase, Plus, Trash2, Calendar, Link as LinkIcon, Code } from 'lucide-react';
+import { FolderGit2, Plus, Trash2, Calendar, Link as LinkIcon, Code } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
-import debounce from 'lodash.debounce';
-import { useMemo } from 'react';
 
 // Match "Projects" structure in Schema
 const projectSchema = z.object({
     id: z.string(),
-    name: z.string().min(1, 'Project name is required'),
-    description: z.string().optional(),
-    url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-    technologies: z.string().optional(), // We will store as comma-separated string then split
+    project_name: z.string().min(1, 'Project name is required'),
+    project_description: z.string().optional(),
+    project_link: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+    technologies_used: z.string().optional(), // We will store as comma-separated string then split
     start_date: z.string().optional(),
     end_date: z.string().optional()
 });
@@ -30,10 +28,10 @@ export default function ProjectsForm() {
     // Map store state (array of strings for tech) to form state (comma separated string)
     const formattedProjects = projects?.map(p => ({
         ...p,
-        technologies: Array.isArray(p.technologies) ? p.technologies.join(', ') : (p.technologies || '')
+        technologies_used: Array.isArray(p.technologies_used) ? p.technologies_used.join(', ') : (p.technologies_used || '')
     })) || [];
 
-    const { register, control, watch, formState: { errors } } = useForm({
+    const { register, control, watch, getValues, formState: { errors } } = useForm({
         resolver: zodResolver(projectsSchema),
         defaultValues: {
             projects: formattedProjects
@@ -46,42 +44,31 @@ export default function ProjectsForm() {
         name: 'projects'
     });
 
-    // Debounce the array updates to prevent UI stutter while typing
-    const debouncedUpdate = useMemo(
-        () => debounce((value) => {
-            if (!value) return;
-
-            // Transform the comma separated string back into an array before saving to global store
-            const payloadToSave = value.map(p => ({
-                ...p,
-                technologies: typeof p.technologies === 'string' && p.technologies.trim() !== ''
-                    ? p.technologies.split(',').map(t => t.trim()).filter(Boolean)
-                    : []
-            }));
-
-            // Sync the entire projects array to the store
-            const currentStore = useResumeStore.getState().projects;
-            if (JSON.stringify(currentStore) !== JSON.stringify(payloadToSave)) {
-                useResumeStore.setState({ projects: payloadToSave });
-            }
-        }, 300),
-        []
-    );
-
     useEffect(() => {
         const subscription = watch((value) => {
-            debouncedUpdate(value.projects);
+            if (!value || !value.projects) return;
+
+            // Transform the comma separated string back into an array before saving to global store
+            const payloadToSave = value.projects.map(p => ({
+                ...p,
+                technologies_used: typeof p?.technologies_used === 'string' && p.technologies_used.trim() !== ''
+                    ? p.technologies_used.split(',').map(t => t.trim()).filter(Boolean)
+                    : (Array.isArray(p?.technologies_used) ? [...p.technologies_used] : [])
+            }));
+
+            // Instantly sync deeply cloned array to global store for zero lag
+            useResumeStore.setState({ projects: JSON.parse(JSON.stringify(payloadToSave)) });
         });
         return () => subscription.unsubscribe();
-    }, [watch, debouncedUpdate]);
+    }, [watch]);
 
     const handleAddProject = () => {
         append({
             id: uuidv4(),
-            name: '',
-            description: '',
-            url: '',
-            technologies: '',
+            project_name: '',
+            project_description: '',
+            project_link: '',
+            technologies_used: '',
             start_date: '',
             end_date: ''
         });
@@ -141,11 +128,11 @@ export default function ProjectsForm() {
                                 <div className="space-y-1.5 md:col-span-2">
                                     <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Project Name <span className="text-red-500">*</span></label>
                                     <input
-                                        {...register(`projects.${index}.name`)}
+                                        {...register(`projects.${index}.project_name`)}
                                         className={inputClasses}
                                         placeholder="E-commerce Platform"
                                     />
-                                    {errors.projects?.[index]?.name && <p className="text-red-500 text-xs mt-1">{errors.projects[index].name.message}</p>}
+                                    {errors.projects?.[index]?.project_name && <p className="text-red-500 text-xs mt-1">{errors.projects[index].project_name.message}</p>}
                                 </div>
 
                                 <div className="space-y-1.5">
@@ -155,18 +142,18 @@ export default function ProjectsForm() {
                                             <LinkIcon className="h-4 w-4 text-slate-400 group-focus-within/input:text-primary-500 transition-colors" />
                                         </div>
                                         <input
-                                            {...register(`projects.${index}.url`)}
+                                            {...register(`projects.${index}.project_link`)}
                                             className={`${inputClasses} pl-10`}
                                             placeholder="https://github.com/..."
                                         />
                                     </div>
-                                    {errors.projects?.[index]?.url && <p className="text-red-500 text-xs mt-1">{errors.projects[index].url.message}</p>}
+                                    {errors.projects?.[index]?.project_link && <p className="text-red-500 text-xs mt-1">{errors.projects[index].project_link.message}</p>}
                                 </div>
 
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Technologies (Comma Separated)</label>
                                     <input
-                                        {...register(`projects.${index}.technologies`)}
+                                        {...register(`projects.${index}.technologies_used`)}
                                         className={inputClasses}
                                         placeholder="React, Node.js, PostgreSQL"
                                     />
@@ -204,7 +191,7 @@ export default function ProjectsForm() {
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Description</label>
                                 <textarea
-                                    {...register(`projects.${index}.description`)}
+                                    {...register(`projects.${index}.project_description`)}
                                     rows={4}
                                     className={`${inputClasses} resize-none`}
                                     placeholder="Describe your role, contributions, and the outcome of the project..."

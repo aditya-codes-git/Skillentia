@@ -5,23 +5,29 @@ const initialResumeState = {
     personal_details: {
         first_name: '',
         last_name: '',
-        email: '',
         phone: '',
+        email: '',
         location: '',
         linkedin_url: '',
+        github_url: '',
         portfolio_url: '',
         summary: ''
     },
-    education: [],
-    experience: [],
+    education: [], // { id, institution_name, institution_location, degree, field_of_study, start_date, end_date, is_current, gpa, education_description }
+    experience: [], // { id, company_name, job_title, location, start_date, end_date, is_current, experience_summary, responsibilities }
+    projects: [], // { id, project_name, project_description, project_link, technologies_used (Array), start_date, end_date }
     skills: {
         technical_skills: [],
         tools: [],
         frameworks: [],
-        languages: [],
+        programming_languages: [],
         soft_skills: []
     },
-    projects: [],
+    achievements: [], // { id, achievement_title, achievement_description, achievement_date }
+    custom_section: {
+        title: 'Custom Section',
+        items: [] // { id, title, sub_title, date, description }
+    },
     certifications: []
 };
 
@@ -67,6 +73,10 @@ export const useResumeStore = create((set, get) => ({
     addProject: (item) => get().addItem('projects', item),
     updateProject: (id, item) => get().updateItem('projects', id, item),
     removeProject: (id) => get().removeItem('projects', id),
+
+    addAchievement: (item) => get().addItem('achievements', item),
+    updateAchievement: (id, item) => get().updateItem('achievements', id, item),
+    removeAchievement: (id) => get().removeItem('achievements', id),
 
     addCertification: (item) => get().addItem('certifications', item),
     updateCertification: (id, item) => get().updateItem('certifications', id, item),

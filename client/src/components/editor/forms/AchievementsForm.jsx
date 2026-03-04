@@ -1,5 +1,6 @@
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import debounce from 'lodash.debounce';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
@@ -9,9 +10,9 @@ import { v4 as uuidv4 } from 'uuid';
 // Match "Achievements" structure in Schema
 const achievementSchema = z.object({
     id: z.string(),
-    title: z.string().min(1, 'Title is required'),
-    description: z.string().optional(),
-    year: z.string().optional()
+    achievement_title: z.string().min(1, 'Title is required'),
+    achievement_description: z.string().optional(),
+    achievement_date: z.string().optional()
 });
 
 const achievementsSchema = z.object({
@@ -21,7 +22,7 @@ const achievementsSchema = z.object({
 export default function AchievementsForm() {
     const { achievements, setFullResume } = useResumeStore();
 
-    const { register, control, watch, formState: { errors } } = useForm({
+    const { register, control, watch, getValues, formState: { errors } } = useForm({
         resolver: zodResolver(achievementsSchema),
         defaultValues: {
             achievements: achievements || []
@@ -34,19 +35,28 @@ export default function AchievementsForm() {
         name: 'achievements'
     });
 
-    const formValues = watch('achievements');
+    const formAchievements = watch('achievements');
+
+    const debouncedUpdate = useMemo(
+        () => debounce((data) => {
+            if (data) {
+                useResumeStore.setState({ achievements: [...data] });
+            }
+        }, 300),
+        []
+    );
 
     useEffect(() => {
-        if (!formValues) return;
-        setFullResume({ achievements: formValues });
-    }, [formValues, setFullResume]);
+        debouncedUpdate(formAchievements);
+        return () => debouncedUpdate.cancel();
+    }, [formAchievements, debouncedUpdate]);
 
     const handleAddAchievement = () => {
         append({
             id: uuidv4(),
-            title: '',
-            description: '',
-            year: ''
+            achievement_title: '',
+            achievement_description: '',
+            achievement_date: ''
         });
     };
 
@@ -104,11 +114,11 @@ export default function AchievementsForm() {
                                 <div className="space-y-1.5 md:col-span-2">
                                     <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Title <span className="text-red-500">*</span></label>
                                     <input
-                                        {...register(`achievements.${index}.title`)}
+                                        {...register(`achievements.${index}.achievement_title`)}
                                         className={inputClasses}
                                         placeholder="1st Place - National Hackathon"
                                     />
-                                    {errors.achievements?.[index]?.title && <p className="text-red-500 text-xs mt-1">{errors.achievements[index].title.message}</p>}
+                                    {errors.achievements?.[index]?.achievement_title && <p className="text-red-500 text-xs mt-1">{errors.achievements[index].achievement_title.message}</p>}
                                 </div>
 
                                 <div className="space-y-1.5">
@@ -118,7 +128,7 @@ export default function AchievementsForm() {
                                             <Calendar className="h-4 w-4 text-slate-400 group-focus-within/input:text-primary-500 transition-colors" />
                                         </div>
                                         <input
-                                            {...register(`achievements.${index}.year`)}
+                                            {...register(`achievements.${index}.achievement_date`)}
                                             className={`${inputClasses} pl-10`}
                                             placeholder="2024"
                                         />
@@ -129,7 +139,7 @@ export default function AchievementsForm() {
                             <div className="space-y-1.5">
                                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Description</label>
                                 <textarea
-                                    {...register(`achievements.${index}.description`)}
+                                    {...register(`achievements.${index}.achievement_description`)}
                                     rows={3}
                                     className={`${inputClasses} resize-none`}
                                     placeholder="Briefly describe the significance or criteria of the award..."

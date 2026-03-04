@@ -7,6 +7,9 @@ import PersonalDetailsForm from '../../components/editor/forms/PersonalDetailsFo
 import ExperienceForm from '../../components/editor/forms/ExperienceForm';
 import EducationForm from '../../components/editor/forms/EducationForm';
 import SkillsForm from '../../components/editor/forms/SkillsForm';
+import ProjectsForm from '../../components/editor/forms/ProjectsForm';
+import AchievementsForm from '../../components/editor/forms/AchievementsForm';
+import CustomSectionForm from '../../components/editor/forms/CustomSectionForm';
 
 export default function EditorEntryPoint() {
     const { id } = useParams();
@@ -21,7 +24,8 @@ export default function EditorEntryPoint() {
         experience: resumeState.experience,
         skills: resumeState.skills,
         projects: resumeState.projects,
-        certifications: resumeState.certifications
+        achievements: resumeState.achievements,
+        custom_section: resumeState.custom_section
     }, id, 3000);
 
     useEffect(() => {
@@ -101,7 +105,10 @@ export default function EditorEntryPoint() {
             <PersonalDetailsForm />
             <ExperienceForm />
             <EducationForm />
+            <ProjectsForm />
             <SkillsForm />
+            <AchievementsForm />
+            <CustomSectionForm />
 
         </div>
     );

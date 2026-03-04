@@ -3,8 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useResumeStore } from '../../../store/useResumeStore';
 import { Wrench } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
-import debounce from 'lodash.debounce';
+import { useEffect } from 'react';
 
 // Skills schema expects arrays of strings. 
 // We will collect them as comma-separated strings in the UI and split them before hitting the store.
@@ -12,7 +11,7 @@ const skillsSchema = z.object({
     technical_skills: z.string(),
     tools: z.string(),
     frameworks: z.string(),
-    languages: z.string(),
+    programming_languages: z.string(),
     soft_skills: z.string(),
 });
 
@@ -20,55 +19,41 @@ export default function SkillsForm() {
     const skills = useResumeStore(state => state.skills);
     const updateSkills = useResumeStore(state => state.updateSkills);
 
-    const { register, watch, formState: { errors } } = useForm({
+    const { register, watch, getValues, formState: { errors } } = useForm({
         resolver: zodResolver(skillsSchema),
         // Join the arrays from the store to load them into the string inputs
         defaultValues: {
             technical_skills: skills.technical_skills.join(', '),
             tools: skills.tools.join(', '),
             frameworks: skills.frameworks.join(', '),
-            languages: skills.languages.join(', '),
+            programming_languages: skills.programming_languages.join(', '),
             soft_skills: skills.soft_skills.join(', '),
         },
         mode: 'onChange'
     });
 
-    // Create a debounced update function that only fires 500ms after edits
-    const debouncedUpdate = useMemo(
-        () => debounce((value) => {
+    useEffect(() => {
+        const subscription = watch((value) => {
             if (!value) return;
 
-            let hasChanges = false;
             const nextSkills = {};
 
             Object.entries(value).forEach(([category, stringValue]) => {
-                if (typeof stringValue !== 'string') return;
-                const arr = stringValue.split(',').map(s => s.trim()).filter(Boolean);
-                nextSkills[category] = arr;
-
-                // Check if the new array is actually different from the current store array
-                const currentArr = skills[category] || [];
-                if (arr.length !== currentArr.length || !arr.every((val, index) => val === currentArr[index])) {
-                    hasChanges = true;
+                if (typeof stringValue === 'string') {
+                    const arr = stringValue.split(',').map(s => s.trim()).filter(Boolean);
+                    nextSkills[category] = arr;
+                } else if (Array.isArray(stringValue)) {
+                    nextSkills[category] = stringValue;
                 }
             });
 
-            // Only update the store if there are actual string changes, preventing infinite loops
-            if (hasChanges) {
-                Object.entries(nextSkills).forEach(([category, arr]) => {
-                    updateSkills(category, arr);
-                });
-            }
-        }, 300),
-        [skills, updateSkills]
-    );
-
-    useEffect(() => {
-        const subscription = watch((value) => {
-            debouncedUpdate(value);
+            // Update the store directly with completely detached copies
+            Object.entries(nextSkills).forEach(([category, arr]) => {
+                updateSkills(category, JSON.parse(JSON.stringify(arr)));
+            });
         });
         return () => subscription.unsubscribe();
-    }, [watch, debouncedUpdate]);
+    }, [watch, updateSkills]);
 
     return (
         <div className="card p-6 mb-6">
@@ -88,7 +73,7 @@ export default function SkillsForm() {
                 </div>
                 <div>
                     <label className="label">Programming Languages</label>
-                    <input {...register('languages')} className="input-field" placeholder="JavaScript, Python, Rust..." />
+                    <input {...register('programming_languages')} className="input-field" placeholder="JavaScript, Python, Rust..." />
                 </div>
                 <div>
                     <label className="label">Frameworks & Libraries</label>
