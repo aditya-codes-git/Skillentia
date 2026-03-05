@@ -7,6 +7,7 @@ import HowItWorksSection from '../components/dashboard/HowItWorksSection';
 import StatsSection from '../components/dashboard/StatsSection';
 import FeaturesSection from '../components/dashboard/FeaturesSection';
 import FaqSection from '../components/dashboard/FaqSection';
+import TechnologyMarquee from '../components/dashboard/TechnologyMarquee';
 import logoImgLight from '../assets/skillentia_logo.png';
 import logoImgDark from '../assets/skillentia_logo_dark.png';
 
@@ -196,6 +197,7 @@ export default function DashboardPage() {
             {/* Extended Landing Sections */}
             <div className="w-full relative z-10 space-y-24 mt-32 border-t border-slate-200 dark:border-slate-800/50 pt-16">
                 <ProductIntroSection />
+                <TechnologyMarquee />
                 <HowItWorksSection />
                 <FeaturesSection />
                 <StatsSection />

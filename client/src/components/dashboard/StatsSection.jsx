@@ -1,6 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
-import ParticleBurst from './ParticleBurst';
+import { InteractiveRobotSpline } from '../ui/InteractiveRobotSpline';
 
 // Animated counter hook
 function useCounter(end, duration = 2000) {
@@ -39,6 +39,8 @@ const stats = [
     { label: 'Active Professionals', suffix: '' },
 ];
 
+const ROBOT_SCENE_URL = "https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode";
+
 export default function StatsSection() {
     const resumesCounter = useCounter(14205, 2500);
     const aiOptimizationsCounter = useCounter(58923, 3000);
@@ -47,8 +49,8 @@ export default function StatsSection() {
     const counters = [resumesCounter, aiOptimizationsCounter, activeUsersCounter];
 
     return (
-        <div className="relative py-24 -mx-4 sm:-mx-6 lg:-mx-8 overflow-hidden rounded-3xl">
-            {/* Deep indigo gradient background — Stripe-inspired */}
+        <div className="relative -mx-4 sm:-mx-6 lg:-mx-8 overflow-hidden rounded-3xl">
+            {/* Deep indigo gradient background */}
             <div
                 className="absolute inset-0 rounded-3xl"
                 style={{
@@ -63,9 +65,6 @@ export default function StatsSection() {
                 }}
             />
 
-            {/* Particle Burst Visual */}
-            <ParticleBurst />
-
             {/* Content */}
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
                 {/* Section heading */}
@@ -74,7 +73,7 @@ export default function StatsSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="text-center mb-16"
+                    className="text-center pt-20 mb-4"
                 >
                     <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4 tracking-tight">
                         The backbone of{'\n'}<br />career acceleration
@@ -82,7 +81,7 @@ export default function StatsSection() {
                 </motion.div>
 
                 {/* Stats grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+                <div className="relative grid grid-cols-1 md:grid-cols-3 gap-0 mb-4">
                     {/* Horizontal gradient divider line */}
                     <div className="absolute left-[10%] right-[10%] top-[60%] h-px bg-gradient-to-r from-transparent via-white/20 to-transparent hidden md:block" />
 
@@ -96,8 +95,8 @@ export default function StatsSection() {
                             >
                                 <div
                                     className={`text-5xl md:text-6xl font-display font-bold mb-3 tabular-nums ${stat.gradient
-                                            ? 'text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-white'
-                                            : 'text-white'
+                                        ? 'text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-white'
+                                        : 'text-white'
                                         }`}
                                 >
                                     {counter.count.toLocaleString()}{stat.suffix || ''}
@@ -109,6 +108,20 @@ export default function StatsSection() {
                         );
                     })}
                 </div>
+
+                {/* 3D Interactive Robot */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                    className="relative w-full h-[400px] md:h-[500px] lg:h-[550px]"
+                >
+                    <InteractiveRobotSpline
+                        scene={ROBOT_SCENE_URL}
+                        className="absolute inset-0 z-0"
+                    />
+                </motion.div>
             </div>
         </div>
     );

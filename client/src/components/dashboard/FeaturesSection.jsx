@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { LayoutTemplate, Lightbulb, LineChart, Layers } from 'lucide-react';
+import { GlowingEffect } from '../ui/glowing-effect';
 
 const features = [
     {
@@ -56,16 +57,24 @@ export default function FeaturesSection() {
                 {features.map((feature, idx) => {
                     const Icon = feature.icon;
                     return (
-                        <motion.div key={idx} variants={itemVariants} className="glass-card p-8 group hover:-translate-y-1 transition-all duration-300 hover:shadow-elevation-2 relative overflow-hidden">
-                            {/* Gradient bottom accent */}
-                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <div className="flex items-start gap-5">
-                                <div className={`p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 ${feature.color}`}>
-                                    <Icon className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
-                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{feature.description}</p>
+                        <motion.div key={idx} variants={itemVariants} className="relative group flex-1">
+                            <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-slate-200 dark:border-white/[0.06] p-2 md:rounded-[1.5rem] md:p-3">
+                                <GlowingEffect
+                                    spread={40}
+                                    glow={true}
+                                    disabled={false}
+                                    proximity={64}
+                                    inactiveZone={0.01}
+                                    borderWidth={3}
+                                />
+                                <div className="relative flex h-full items-start gap-5 overflow-hidden rounded-xl border-[0.75px] border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 p-6 md:p-8 shadow-sm dark:shadow-[0px_0px_27px_0px_rgba(45,45,45,0.3)] backdrop-blur-sm transition-colors hover:border-slate-300 dark:hover:border-slate-600">
+                                    <div className={`p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 flex-shrink-0 shadow-sm border border-slate-100 dark:border-slate-700 group-hover:scale-110 transition-transform duration-300 ${feature.color}`}>
+                                        <Icon className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
+                                        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{feature.description}</p>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>

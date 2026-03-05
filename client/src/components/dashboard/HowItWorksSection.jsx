@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { UserPlus, FileEdit, Cpu, Download } from 'lucide-react';
+import { GlowingEffect } from '../ui/glowing-effect';
 
 const steps = [
     {
@@ -65,21 +66,31 @@ export default function HowItWorksSection() {
                 {steps.map((step, index) => {
                     const Icon = step.icon;
                     return (
-                        <motion.div key={step.id} variants={itemVariants} className="relative group">
+                        <motion.div key={step.id} variants={itemVariants} className="relative group flex-1">
                             {/* Connector Line (hidden on mobile, visible on lg) */}
                             {index < steps.length - 1 && (
                                 <div className="hidden lg:block absolute top-10 left-[60%] w-full h-[2px] bg-gradient-to-r from-slate-200 to-transparent dark:from-slate-800 z-0"></div>
                             )}
 
-                            <div className="glass-card p-6 h-full flex flex-col items-center text-center relative z-10 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
-                                <div className={`w-20 h-20 rounded-2xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-6 text-xl font-bold ${step.color} relative`}>
-                                    <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center text-xs font-bold shadow-md">
-                                        {step.id}
+                            <div className="relative h-full rounded-[1.25rem] border-[0.75px] border-slate-200 dark:border-white/[0.06] p-2 md:rounded-[1.5rem] md:p-3">
+                                <GlowingEffect
+                                    spread={40}
+                                    glow={true}
+                                    disabled={false}
+                                    proximity={64}
+                                    inactiveZone={0.01}
+                                    borderWidth={3}
+                                />
+                                <div className="relative flex h-full flex-col items-center text-center justify-start gap-4 overflow-hidden rounded-xl border-[0.75px] border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 p-6 shadow-sm dark:shadow-[0px_0px_27px_0px_rgba(45,45,45,0.3)] backdrop-blur-sm transition-colors hover:border-slate-300 dark:hover:border-slate-600">
+                                    <div className={`w-20 h-20 rounded-2xl bg-slate-50 dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center mb-2 text-xl font-bold ${step.color} relative`}>
+                                        <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center text-xs font-bold shadow-md">
+                                            {step.id}
+                                        </div>
+                                        <Icon className="w-8 h-8" />
                                     </div>
-                                    <Icon className="w-8 h-8" />
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">{step.title}</h3>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{step.description}</p>
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{step.title}</h3>
-                                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{step.description}</p>
                             </div>
                         </motion.div>
                     );
