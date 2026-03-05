@@ -16,6 +16,7 @@ import AnimatedBackground from './components/layout/AnimatedBackground';
 import AnalyzePage from './pages/analyzer/AnalyzePage';
 import AnalysisResultsPage from './pages/analyzer/AnalysisResultsPage';
 import AnalysisHistoryPage from './pages/analyzer/AnalysisHistoryPage';
+import SettingsPage from './pages/SettingsPage';
 
 function App() {
   const initialize = useAuthStore((state) => state.initialize);
@@ -72,7 +73,7 @@ function App() {
         },
         {
           path: 'settings',
-          element: <ProtectedRoute><div className="animate-fade-in"><h1 className="text-3xl font-display font-bold dark:text-white">Settings</h1><p className="mt-2 text-slate-500">Coming soon.</p></div></ProtectedRoute>,
+          element: <ProtectedRoute><SettingsPage /></ProtectedRoute>,
         }
       ]
     },

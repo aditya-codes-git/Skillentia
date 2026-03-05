@@ -54,6 +54,46 @@ export const useAuthStore = create((set, get) => ({
         return data;
     },
 
+    updateProfile: async (metadata) => {
+        const { data, error } = await supabase.auth.updateUser({
+            data: metadata
+        });
+        if (error) throw error;
+        set({ user: data.user });
+        return data;
+    },
+
+    updatePassword: async (newPassword) => {
+        const { data, error } = await supabase.auth.updateUser({
+            password: newPassword
+        });
+        if (error) throw error;
+        return data;
+    },
+
+    deleteAccount: async () => {
+        const user = get().user;
+        if (!user) throw new Error('No user logged in');
+
+        // Delete all user-owned resumes (cascade deletes sections, versions, analysis_results)
+        const { error: resumeError } = await supabase
+            .from('resumes')
+            .delete()
+            .eq('user_id', user.id);
+        if (resumeError) throw resumeError;
+
+        // Delete export logs if table exists
+        try {
+            await supabase.from('resume_exports').delete().eq('user_id', user.id);
+        } catch (_) { /* table may not exist */ }
+
+        // Call the server-side RPC to delete the auth user
+        const { error: rpcError } = await supabase.rpc('delete_user_account');
+        if (rpcError) throw rpcError;
+
+        set({ user: null, session: null });
+    },
+
     signOut: async () => {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;

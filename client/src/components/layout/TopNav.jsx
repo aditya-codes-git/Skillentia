@@ -5,7 +5,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { useThemeStore } from '../../store/useThemeStore';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import logoImgLight from '../../assets/skillentia_logo.png';
 import logoImgDark from '../../assets/skillentia_logo_dark.png';
 
@@ -24,6 +24,7 @@ export default function TopNav() {
     const [scrolled, setScrolled] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const profileRef = useRef(null);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -37,6 +38,19 @@ export default function TopNav() {
     useEffect(() => {
         setIsMobileMenuOpen(false);
     }, [location.pathname]);
+
+    // Close profile dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (profileRef.current && !profileRef.current.contains(e.target)) {
+                setIsProfileOpen(false);
+            }
+        };
+        if (isProfileOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isProfileOpen]);
 
     const handleSignOut = async () => {
         try {
@@ -132,7 +146,7 @@ export default function TopNav() {
                         {/* Profile & CTA */}
                         <div className="flex items-center gap-3">
                             {user ? (
-                                <div className="relative">
+                                <div ref={profileRef} className="relative">
                                     {/* Profile Dropdown Trigger */}
                                     <button
                                         onClick={() => setIsProfileOpen(!isProfileOpen)}
