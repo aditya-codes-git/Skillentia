@@ -78,7 +78,7 @@ export default function EditorLayout() {
     };
 
     return (
-        <div className="flex h-screen w-full overflow-hidden relative z-10">
+        <div className="flex flex-col md:flex-row min-h-screen md:h-screen w-full overflow-hidden relative z-10">
             {/* The global AnimatedBackground sits behind this */}
 
             {/* Left Pane: Form Editor */}
@@ -86,7 +86,7 @@ export default function EditorLayout() {
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="flex-1 w-1/2 flex flex-col border-r border-slate-200/50 dark:border-slate-800/50 glass-card rounded-none shadow-none z-20 transform-gpu"
+                className="w-full md:w-1/2 flex flex-col border-b md:border-b-0 md:border-r border-slate-200/50 dark:border-slate-800/50 glass-card rounded-none shadow-none z-20 transform-gpu min-h-[50vh] md:min-h-0 md:flex-1"
             >
                 <div className="h-14 border-b border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between px-6 gap-2 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md">
                     <div className="flex items-center gap-3">
@@ -123,7 +123,7 @@ export default function EditorLayout() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="flex-1 w-1/2 flex flex-col bg-slate-50/50 dark:bg-[#000000]/50 backdrop-blur-sm relative z-10 transform-gpu"
+                className="w-full md:w-1/2 flex flex-col bg-slate-50/50 dark:bg-[#000000]/50 backdrop-blur-sm relative z-10 transform-gpu min-h-[50vh] md:min-h-0 md:flex-1"
             >
                 <div className="h-14 border-b border-slate-200/50 dark:border-slate-800/50 flex items-center justify-between px-6 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md">
                     <div className="flex items-center gap-2">
@@ -150,7 +150,7 @@ export default function EditorLayout() {
 
                 <div className="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center custom-scrollbar">
                     {/* A4 Proportion Canvas Wrapper with float animation */}
-                    <div id="preview-container" className="w-[800px] min-h-[1131px] scale-[0.6] sm:scale-75 md:scale-90 origin-top bg-white dark:bg-slate-50 shadow-2xl ring-1 ring-slate-900/5 select-none transition-transform duration-300 transform-gpu">
+                    <div id="preview-container" className="w-[800px] min-h-[1131px] scale-[0.4] sm:scale-[0.55] md:scale-[0.6] lg:scale-75 xl:scale-90 origin-top bg-white dark:bg-slate-50 shadow-2xl ring-1 ring-slate-900/5 select-none transition-transform duration-300 transform-gpu">
                         <BasicPreview />
                     </div>
                 </div>

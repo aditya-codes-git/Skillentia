@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FileText, Settings, LogOut, Cpu, Plus, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, LogOut, Cpu, Plus, Sun, Moon, X, Menu } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useThemeStore } from '../../store/useThemeStore';
@@ -22,7 +22,8 @@ export default function TopNav() {
     const { user, signOut } = useAuthStore();
     const { theme, toggleTheme } = useThemeStore();
     const [scrolled, setScrolled] = useState(false);
-    const [isProfileOpen, setIsProfileOpen] = useState(false); // Changed from menuOpen
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -31,6 +32,11 @@ export default function TopNav() {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    // Close mobile menu on route change
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [location.pathname]);
 
     const handleSignOut = async () => {
         try {
@@ -197,16 +203,113 @@ export default function TopNav() {
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center">
-                        <button className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-2">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
+                    <div className="md:hidden flex items-center gap-2">
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors"
+                        >
+                            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                        </button>
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </button>
                     </div>
 
                 </div>
+
+                {/* Mobile Menu Panel */}
+                <AnimatePresence>
+                    {isMobileMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            className="md:hidden overflow-hidden mt-2"
+                        >
+                            <div className="glass-nav rounded-2xl shadow-soft px-4 py-4 space-y-1">
+                                {/* Navigation Links */}
+                                {navigation.map((item) => {
+                                    const isActive = location.pathname === item.href || (item.href !== '/' && location.pathname.startsWith(item.href));
+                                    return (
+                                        <Link
+                                            key={item.name}
+                                            to={item.href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={clsx(
+                                                'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors',
+                                                isActive
+                                                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white'
+                                            )}
+                                        >
+                                            <item.icon className="w-4 h-4" />
+                                            {item.name}
+                                        </Link>
+                                    );
+                                })}
+
+                                {/* Divider */}
+                                <div className="h-px bg-slate-200 dark:bg-slate-800 my-2"></div>
+
+                                {/* Create Button */}
+                                <Link
+                                    to="/resumes/new"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-indigo-600 hover:shadow-glow transition-all"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Create New Resume
+                                </Link>
+
+                                {/* Auth Actions */}
+                                {user ? (
+                                    <>
+                                        <div className="h-px bg-slate-200 dark:bg-slate-800 my-2"></div>
+                                        <div className="flex items-center gap-3 px-4 py-3">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                                                {userInitial}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{displayName || user?.email}</p>
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => { setIsMobileMenuOpen(false); handleSignOut(); }}
+                                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+                                        >
+                                            <LogOut className="w-4 h-4" />
+                                            Sign out
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="h-px bg-slate-200 dark:bg-slate-800 my-2"></div>
+                                        <Link
+                                            to="/login"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="flex items-center justify-center px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                                        >
+                                            Sign In
+                                        </Link>
+                                        <Link
+                                            to="/signup"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="flex items-center justify-center px-4 py-3 rounded-xl text-sm font-semibold text-white bg-slate-900 dark:bg-white dark:text-slate-900 hover:opacity-90 transition-all"
+                                        >
+                                            Get Started
+                                        </Link>
+                                    </>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-        </motion.header >
+        </motion.header>
     );
 }
