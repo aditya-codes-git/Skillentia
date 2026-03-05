@@ -13,7 +13,7 @@ const itemVariants = {
 
 export default function ProductIntroSection() {
     return (
-        <motion.div variants={itemVariants} className="relative z-10 text-center max-w-4xl mx-auto py-16 lg:py-24 border-t border-slate-200/50 dark:border-slate-800/50 mt-12">
+        <motion.div variants={itemVariants} className="relative z-10 text-center max-w-4xl mx-auto py-16 md:py-24">
             <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}

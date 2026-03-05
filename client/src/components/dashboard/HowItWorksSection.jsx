@@ -55,7 +55,7 @@ export default function HowItWorksSection() {
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={containerVariants}
-            className="py-16 relative z-10"
+            className="py-16 md:py-24 relative z-10"
         >
             <div className="text-center mb-16">
                 <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 dark:text-white mb-4">How It Works</h2>

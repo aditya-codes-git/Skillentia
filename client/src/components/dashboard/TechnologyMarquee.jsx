@@ -15,7 +15,7 @@ const technologies = [
 
 export default function TechnologyMarquee() {
     return (
-        <section className="py-24 relative w-screen left-[50%] right-[50%] -ml-[50vw] -mr-[50vw]">
+        <section className="py-16 md:py-24 relative w-screen left-[50%] right-[50%] -ml-[50vw] -mr-[50vw]">
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 mb-16 text-center">
                 <motion.h2
                     initial={{ opacity: 0, y: 10 }}
