@@ -3,7 +3,7 @@ import TopNav from './TopNav';
 
 export default function DashboardLayout() {
     return (
-        <div className="relative min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300 flex flex-col pt-24 w-full overflow-x-hidden">
+        <div className="relative min-h-screen bg-background-light dark:bg-background-dark transition-colors duration-300 flex flex-col pt-24 w-full">
             {/* Global background noise texture */}
             <div className="bg-noise"></div>
 
